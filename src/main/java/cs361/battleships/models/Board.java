@@ -9,7 +9,6 @@ public class Board {
 
 	@JsonProperty private List<Ship> ships;
 	@JsonProperty private List<Result> attacks;
-	@JsonProperty private List<Square> shipSquares;
 
 	/*
 	DO NOT change the signature of this method. It is used by the grading scripts.
@@ -17,7 +16,6 @@ public class Board {
 	public Board() {
 		this.ships = new ArrayList<>();
 		this.attacks = new ArrayList<>();
-		this.shipSquares = new ArrayList<>();
 	}
 
 	/*
@@ -29,7 +27,7 @@ public class Board {
 			if (!validShipType(ship)) return false;
 		}
 		if (validLocation(shipSize, x, y, isVertical)) {
-			this.shipSquares.addAll(ship.populateSquares(x, y, isVertical));
+			ship.populateSquares(x,y,isVertical);
 			this.ships.add(ship);
 			return true;
 		}
@@ -85,9 +83,11 @@ public class Board {
 		//if max range is outside grid, return false;
 		//now checking if new ship would overlap with existing ships
 		if(this.getShips().size()>0) {
-			for (int i=0; i<allProposedSquares.size(); i++) {
-				for (int j=0; j<shipSquares.size(); j++) {
-					if (!checkSquareConflict(allProposedSquares.get(i), shipSquares.get(j))) return false;
+			for(Ship ships : this.getShips()){
+				for(Square sq : ships.getOccupiedSquares()) {
+					for (int i=0; i<allProposedSquares.size(); i++) {
+						if (isSquareConflict(allProposedSquares.get(i), sq)) return false;
+					}
 				}
 			}
 		}
@@ -96,19 +96,14 @@ public class Board {
 	}
 
 	private boolean validShipType(Ship ship) {
-		for (Ship myShips : this.getShips()) {
-			if (ship.getKind().equals(myShips.getKind())) return false;
+		for (Ship ships : this.getShips()){
+			if(ship.getKind().equals(ships.getKind())) return false;
 		}
 		return true;
 	}
 
-	private boolean checkSquareConflict(Square sq1, Square sq2) {
-		if(sq1.getRow()==sq2.getRow()) return false;
-		else if(sq1.getColumn()==sq2.getColumn()) return false;
-		else return true;
-	}
-
-	public void addShipSquare(Square sq){
-		shipSquares.add(sq);
+	private boolean isSquareConflict(Square sq1, Square sq2) {
+		if(sq1.getRow()==sq2.getRow() && sq1.getColumn()==sq2.getColumn()) return true;
+		else return false;
 	}
 }

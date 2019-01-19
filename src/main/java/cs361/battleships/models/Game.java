@@ -17,8 +17,7 @@ public class Game {
 	 */
     public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
         boolean successful = playersBoard.placeShip(new Ship(ship.getKind()), x, y, isVertical);
-        if (!successful)
-            return false;
+        if (!successful) return false;
 
         boolean opponentPlacedSuccessfully;
         do {

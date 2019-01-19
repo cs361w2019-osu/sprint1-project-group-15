@@ -40,13 +40,12 @@ public class Ship {
 		return this.kind;
 	}
 
-	public List<Square> populateSquares(int x, char y, boolean vert) {
+	public void populateSquares(int x, char y, boolean vert) {
 		for(int i = 0; i<this.size; i++){
 			this.occupiedSquares.add(new Square(x,y));
 			if(vert) x++;
 			else y++;
 		}
-		return this.getOccupiedSquares();
 	}
 
 	public int getSize(){
