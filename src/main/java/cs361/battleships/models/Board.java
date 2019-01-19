@@ -9,6 +9,7 @@ public class Board {
 
 	@JsonProperty private List<Ship> ships;
 	@JsonProperty private List<Result> attacks;
+	@JsonProperty private List<Square> shipSquares;
 
 	/*
 	DO NOT change the signature of this method. It is used by the grading scripts.
@@ -16,6 +17,7 @@ public class Board {
 	public Board() {
 		this.ships = new ArrayList<>();
 		this.attacks = new ArrayList<>();
+		this.shipSquares = new ArrayList<>();
 	}
 
 	/*
@@ -23,15 +25,15 @@ public class Board {
 	 */
 	public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
 		int shipSize = ship.getSize();
-		if(!validShipType(ship)) return false;
-		if(validLocation(shipSize, x, y, isVertical)){
-			ship.populateSquares(x, y, isVertical);
-			ships.add(ship);
+		if(this.getShips().size()>0) {
+			if (!validShipType(ship)) return false;
+		}
+		if (validLocation(shipSize, x, y, isVertical)) {
+			this.shipSquares.addAll(ship.populateSquares(x, y, isVertical));
+			this.ships.add(ship);
 			return true;
 		}
-		else{
-			return false;
-		}
+		return false;
 	}
 
 	/*
@@ -43,7 +45,7 @@ public class Board {
 	}
 
 	public List<Ship> getShips() {
-		return ships;
+		return this.ships;
 	}
 
 	public void setShips(List<Ship> ships) {
@@ -58,40 +60,55 @@ public class Board {
 	public void setAttacks(List<Result> attacks) {
 		//TODO implement
 	}
+
 	/*
 	This function takes proposed ship coords and returns true or false based on whether the proposed location is valid
 	 */
-	private boolean validLocation(int size, int x, char y, boolean vertical){
-		int intY = (int)y;
-		if(vertical) x = x+size-1;
-		else intY = intY+size-1;
+	private boolean validLocation(int size, int x, char y, boolean vertical) {
+		List<Square> allProposedSquares = new ArrayList<>();
+		//check max x and y and populate proposed squares depending on orientation
+		if (vertical) {
+			if (x + size - 1 > 10 || (int)y > 74) {
+				return false;
+			}
+			for (int i = 0; i < size; i++) {
+				allProposedSquares.add(new Square(x + i, y));
+			}
+		} else {
+			if ((int) y + size - 1 > 74 || x > 10) {
+				return false;
+			}
+			for (int i = 0; i < size; i++) {
+				allProposedSquares.add(new Square(x, (char) ((int) y + 1)));
+			}
+		}
 		//if max range is outside grid, return false;
-		if( x > 10 || intY > 73) return false;
-		else {
-			//now checking if new ship would overlap with existing ships
-			for(Ship myShips : this.getShips()){
-				for(Square mySquare : myShips.getOccupiedSquares()){
-					//loop through all squares and test against proposed boundaries of new ship
-					int currRow=mySquare.getRow();
-					int currCol=(int)mySquare.getColumn();
-					if(vertical) {
-						if(intY == currCol) return false;
-						if(currRow <= x && currRow >= x-size+1) return false;
-					}
-					else{
-						if(x == currRow) return false;
-						if(currCol <= intY && currCol >= y-size+1) return false;
-					}
+		//now checking if new ship would overlap with existing ships
+		if(this.getShips().size()>0) {
+			for (int i=0; i<allProposedSquares.size(); i++) {
+				for (int j=0; j<shipSquares.size(); j++) {
+					if (!checkSquareConflict(allProposedSquares.get(i), shipSquares.get(j))) return false;
 				}
 			}
-			//otherwise we make it through the tests and return true
-			return true;
 		}
+		//otherwise we make it through the tests and return true
+		return true;
 	}
-	private boolean validShipType(Ship ship){
-		for(Ship myShips: this.getShips()){
-			if(ship.getKind().equals(myShips.getKind())) return false;
+
+	private boolean validShipType(Ship ship) {
+		for (Ship myShips : this.getShips()) {
+			if (ship.getKind().equals(myShips.getKind())) return false;
 		}
 		return true;
+	}
+
+	private boolean checkSquareConflict(Square sq1, Square sq2) {
+		if(sq1.getRow()==sq2.getRow()) return false;
+		else if(sq1.getColumn()==sq2.getColumn()) return false;
+		else return true;
+	}
+
+	public void addShipSquare(Square sq){
+		shipSquares.add(sq);
 	}
 }

@@ -22,20 +22,6 @@ public class BoardTest {
     }
 
     @Test
-    public void testSecondValidPlacement() {
-        Board board = new Board();
-        assertTrue(board.placeShip(new Ship("BATTLESHIP"), 6, 'C', false));
-        assertTrue(board.placeShip(new Ship("MINESWEEPER"), 8, 'C', true));
-    }
-
-    @Test
-    public void testDuplicateShipKind() {
-        Board board = new Board();
-        assertTrue(board.placeShip(new Ship("MINDSWEEPER"), 6, 'D', false));
-        assertFalse(board.placeShip(new Ship("MINESWEEPER"), 9, 'A', true));
-    }
-
-    @Test
     public void testOverlapPlacement() {
         Board board = new Board();
         board.placeShip(new Ship("DESTROYER"), 6, 'D', true);
