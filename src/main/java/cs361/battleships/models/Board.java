@@ -47,13 +47,14 @@ public class Board {
 		//Initialize result with status TBD
 		Result res = new Result();
 		res.setLocation(sq1);
-
 		//If ship is present on coordinates
-		if(isDuplicateAttack(sq1)){
+
+		if(isDuplicateAttack(sq1)) {
 			res.setResult(AtackStatus.INVALID);
 			return res;
 		}
-		else if(shipPresent(x,y)){
+		this.attacks.add(res);
+		if(shipPresent(x,y)){
 			res.setShip(getShip(x,y));
 			res.setResult(AtackStatus.HIT);
 			if((res.getShip()).isSunk(this.getAttacks())) {
@@ -66,13 +67,11 @@ public class Board {
 		//If input is out of bounds or incorrect. Needs to include duplicate attack as well.
 		else if((x>10 || x<0) || (y > 'J' || y < 'A')){
 			res.setResult(AtackStatus.INVALID);
-			return res;
 		}
 		//If no ship is on the space
 		else{
 			res.setResult(AtackStatus.MISS);
 		}
-		this.attacks.add(res);
 		return res;
 	}
 
