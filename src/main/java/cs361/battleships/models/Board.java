@@ -75,18 +75,6 @@ public class Board {
 		return res;
 	}
 
-	public boolean isDuplicateAttack(Square attackLocation) {
-		//loops through every attack on the board and checks if one already exists at the current location
-		//returns true if another attack at the location exists, false if not
-		for(Result attack : this.getAttacks()) {
-			if((attack.getLocation().getRow() == attackLocation.getRow()) &&
-					(attack.getLocation().getColumn() == attackLocation.getColumn())) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public List<Ship> getShips() {
 		return this.ships;
 	}
