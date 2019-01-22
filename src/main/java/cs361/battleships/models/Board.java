@@ -42,6 +42,18 @@ public class Board {
 		return null;
 	}
 
+	public boolean isDuplicateAttack(Square attackLocation) {
+		//loops through every attack on the board and checks if one already exists at the current location
+		//returns true if another attack at the location exists, false if not
+		for(Result attack : this.getAttacks()) {
+			if((attack.getLocation().getRow() == attackLocation.getRow()) &&
+					(attack.getLocation().getColumn() == attackLocation.getColumn())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public List<Ship> getShips() {
 		return this.ships;
 	}
@@ -52,11 +64,12 @@ public class Board {
 
 	public List<Result> getAttacks() {
 		//TODO implement
-		return null;
+		return this.attacks;
 	}
 
 	public void setAttacks(List<Result> attacks) {
 		//TODO implement
+		this.attacks = attacks;
 	}
 
 	/*
