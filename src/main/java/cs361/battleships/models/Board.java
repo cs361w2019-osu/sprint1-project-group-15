@@ -53,17 +53,14 @@ public class Board {
 		if(shipPresent(x,y)){
 			res.setShip(getShip(x,y));
 			res.setResult(AtackStatus.HIT);
-			if((res.getShip()).isSunk(this.getAttacks())){
+			if((res.getShip()).isSunk(this.getAttacks())) {
 				res.setResult(AtackStatus.SUNK);
-				if(!this.shipsLeft()){
+				if (!this.shipsLeft()) {
 					res.setResult(AtackStatus.SURRENDER);
 					return res;
 				}
-				return res;
 			}
-			else {
-				return res;
-			}
+			return res;
 		}
 		//If input is out of bounds or incorrect. Needs to include duplicate attack as well.
 		else if((x>10 || x<0) || (y > 'J' || y < 'A')){
