@@ -4,12 +4,12 @@ public class Result {
 
 	// private members
 	private AtackStatus result;
-	private Square location;
+	private Square square;
 	private Ship ship;
 
 	// public methods
 	public AtackStatus getResult() {
-		return status;
+		return result;
 	}
 
 	public void setResult(AtackStatus result) {
@@ -25,10 +25,10 @@ public class Result {
 	}
 
 	public Square getLocation() {
-		return location;
+		return square;
 	}
 
 	public void setLocation(Square square) {
-		this.ship = ship;
+		this.square = square;
 	}
 }
