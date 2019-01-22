@@ -37,10 +37,45 @@ public class Board {
 	/*
 	DO NOT change the signature of this method. It is used by the grading scripts.
 	 */
+
+	/*
+	Looks for the square and changes the result
+	Will later be split into multiple functions for HIT/MISS/INVALID
+	 */
 	public Result attack(int x, char y) {
-		//TODO Implement
-		return null;
+		//Initialize HIT/MISS Statuses
+		AtackStatus atack = AtackStatus.HIT;
+		AtackStatus miss = AtackStatus.MISS;
+
+		//Initialize square with desired coordinates
+		Square sq1 = new Square();
+		sq1.setColumn(y);
+		sq1.setRow(x);
+
+		//If ship is on desired coordinates
+		if(shipPresent(x,y)){
+			for(Result attacks : this.getAttacks()) {
+				Square sq2 = attacks.getLocation();
+				//Look for the square within results
+				if(isSquareConflict(sq1, sq2)) {
+					//Set square status to HIT
+					attacks.setResult(atack);
+					return attacks;
+				}
+			}
+		}
+		else{
+			for(Result attacks2 : this.getAttacks()) {
+				Square sq2 = attacks2.getLocation();
+				if(isSquareConflict(sq1, sq2)) {
+					//Set square status to MISS
+					attacks2.setResult(miss);
+					return attacks2;
+				}
+			}
+		}
 	}
+
 
 	public List<Ship> getShips() {
 		return this.ships;
@@ -51,12 +86,28 @@ public class Board {
 	}
 
 	public List<Result> getAttacks() {
-		//TODO implement
-		return null;
+		return this.attacks;
 	}
 
 	public void setAttacks(List<Result> attacks) {
 		//TODO implement
+	}
+
+	/*
+	This function checks if a ship is present, returns true or false
+	 */
+	private boolean shipPresent(int x, char y){
+		Square sq = new Square();
+		sq.setColumn(y);
+		sq.setRow(x);
+
+		for(Ship ships : this.getShips()){
+			for(Square squares : ships.getOccupiedSquares()){
+					if(isSquareConflict(sq, squares))
+						return true;
+			}
+		}
+		return false;
 	}
 
 	/*
