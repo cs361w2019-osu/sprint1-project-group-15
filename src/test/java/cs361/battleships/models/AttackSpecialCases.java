@@ -70,13 +70,14 @@ public class AttackSpecialCases {
         //board.attack(10, 'C');
 
         Result firstAttack = generateAttack(9, 'C', AtackStatus.HIT, testShip);
-
+        board.getAttacks().add(firstAttack);
         assertFalse(testShip.isSunk(board.getAttacks()));
 
         //this should be the second and last space the ship occupies. Once this is hit, it should sink the ship
         Result secondAttack = generateAttack(10, 'C', AtackStatus.HIT, testShip);
 
-        //assertTrue(testShip.isSunk(board.getAttacks()));
+        board.getAttacks().add(secondAttack);
+        assertTrue(testShip.isSunk(board.getAttacks()));
     }
 
     public Result generateAttack(int row, char col, AtackStatus attackResult, Ship targetShip) {

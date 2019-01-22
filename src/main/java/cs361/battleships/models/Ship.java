@@ -58,9 +58,14 @@ public class Ship {
 		//ship has been sunk, otherwise it has not.
 		int hits = 0;
 
-		for(Result attack : attacksOnBoard) {
-			if(this.getOccupiedSquares().contains(attack)) {
-				hits += 1;
+		for(Square shipLocationSquare : this.getOccupiedSquares()) {
+			//for every ship
+			//loop through every attack on the board
+			for(Result attack : attacksOnBoard) {
+				if((shipLocationSquare.getColumn() == attack.getLocation().getColumn()) &&
+						(shipLocationSquare.getRow() == attack.getLocation().getRow())) {
+					hits = hits + 1;
+				}
 			}
 		}
 
