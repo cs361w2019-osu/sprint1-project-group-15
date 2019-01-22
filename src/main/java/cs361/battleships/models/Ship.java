@@ -16,7 +16,7 @@ public class Ship {
 		this.kind = new String();
 		this.size=0;
 	}
-	
+
 	public Ship(String kind) {
 		this.kind = kind;
 		this.size=0;
