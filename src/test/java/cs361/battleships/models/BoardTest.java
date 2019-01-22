@@ -86,5 +86,26 @@ public class BoardTest {
 
         System.out.println(res.getResult());
     }
+
+    @Test
+    public void testSunkAttack() {
+        Board board = new Board();
+        board.placeShip(new Ship("BATTLESHIP"), 4, 'D', true);
+        board.placeShip(new Ship("MINESWEEPER"), 1, 'B', true);
+        Result res = board.attack(1, 'B');
+        Result res2 = board.attack(2, 'B');
+
+        System.out.println(res2.getResult());
+    }
+
+    @Test
+    public void testSurrenderAttack() {
+        Board board = new Board();
+        board.placeShip(new Ship("MINESWEEPER"), 1, 'B', true);
+        Result res = board.attack(1, 'B');
+        Result res2 = board.attack(2, 'B');
+
+        System.out.println(res2.getResult());
+    }
 }
 
