@@ -51,4 +51,28 @@ public class Ship {
 	public int getSize(){
 		return this.size;
 	}
+
+	public boolean isSunk(List<Result> attacksOnBoard) {
+		//counts the number of hits on a ship. If the hit count
+		//is the same as the number of squares on the ship, we know the
+		//ship has been sunk, otherwise it has not.
+		int hits = 0;
+
+		for(Square shipLocationSquare : this.getOccupiedSquares()) {
+			//for every ship
+			//loop through every attack on the board
+			for(Result attack : attacksOnBoard) {
+				if((shipLocationSquare.getColumn() == attack.getLocation().getColumn()) &&
+						(shipLocationSquare.getRow() == attack.getLocation().getRow())) {
+					hits = hits + 1;
+				}
+			}
+		}
+
+		if(hits == this.getSize()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
