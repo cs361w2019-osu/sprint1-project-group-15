@@ -36,10 +36,43 @@ public class Board {
 
 	/*
 	DO NOT change the signature of this method. It is used by the grading scripts.
+
+	Looks for the square and changes the result
+	Will later be split into multiple functions for HIT/MISS/INVALID
 	 */
 	public Result attack(int x, char y) {
-		//TODO Implement
-		return null;
+		//Initialize square with desired coordinates
+		Square sq1 = new Square(x,y);
+
+		//Initialize result with status TBD
+		Result res = new Result();
+		res.setLocation(sq1);
+		//If ship is present on coordinates
+
+		if(isDuplicateAttack(sq1)) {
+			res.setResult(AtackStatus.INVALID);
+			return res;
+		}
+		this.attacks.add(res);
+		if(shipPresent(x,y)){
+			res.setShip(getShip(x,y));
+			res.setResult(AtackStatus.HIT);
+			if((res.getShip()).isSunk(this.getAttacks())) {
+				res.setResult(AtackStatus.SUNK);
+				if (!this.shipsLeft()) {
+					res.setResult(AtackStatus.SURRENDER);
+				}
+			}
+		}
+		//If input is out of bounds or incorrect. Needs to include duplicate attack as well.
+		else if((x>10 || x<0) || (y > 'J' || y < 'A')){
+			res.setResult(AtackStatus.INVALID);
+		}
+		//If no ship is on the space
+		else{
+			res.setResult(AtackStatus.MISS);
+		}
+		return res;
 	}
 
 	public boolean isDuplicateAttack(Square attackLocation) {
@@ -58,18 +91,54 @@ public class Board {
 		return this.ships;
 	}
 
+	//Needs isSunk for implementation
+	private boolean shipsLeft(){
+		for(Ship ships : this.getShips()){
+			if(!ships.isSunk(this.getAttacks()))
+				return true;
+		}
+		return false;
+	}
+
+
+	//Returns the ship on a given coordinate
+	private Ship getShip(int x, char y){
+		Square sq = new Square(x, y);
+		for(Ship ships : this.getShips()){
+			for(Square squares : ships.getOccupiedSquares()){
+				if(isSquareConflict(sq, squares))
+					return ships;
+			}
+		}
+		return null;
+	}
+
 	public void setShips(List<Ship> ships) {
 		this.ships = ships;
 	}
 
 	public List<Result> getAttacks() {
-		//TODO implement
 		return this.attacks;
 	}
 
 	public void setAttacks(List<Result> attacks) {
 		//TODO implement
 		this.attacks = attacks;
+	}
+
+	/*
+	This function checks if a ship is present, returns true or false
+	 */
+	private boolean shipPresent(int x, char y){
+		Square sq = new Square(x, y);
+		for(Ship ships : this.getShips()){
+			for(Square squares : ships.getOccupiedSquares()){
+				if (isSquareConflict(sq, squares)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/*
