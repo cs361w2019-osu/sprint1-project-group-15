@@ -46,21 +46,22 @@ public class Board {
 
 		//Initialize result with status TBD
 		Result res = new Result();
-		this.attacks.add(res);
 		res.setLocation(sq1);
 
 		//If ship is present on coordinates
-		if(shipPresent(x,y)){
+		if(isDuplicateAttack(sq1)){
+			res.setResult(AtackStatus.INVALID);
+			return res;
+		}
+		else if(shipPresent(x,y)){
 			res.setShip(getShip(x,y));
 			res.setResult(AtackStatus.HIT);
 			if((res.getShip()).isSunk(this.getAttacks())) {
 				res.setResult(AtackStatus.SUNK);
 				if (!this.shipsLeft()) {
 					res.setResult(AtackStatus.SURRENDER);
-					return res;
 				}
 			}
-			return res;
 		}
 		//If input is out of bounds or incorrect. Needs to include duplicate attack as well.
 		else if((x>10 || x<0) || (y > 'J' || y < 'A')){
@@ -70,8 +71,21 @@ public class Board {
 		//If no ship is on the space
 		else{
 			res.setResult(AtackStatus.MISS);
-			return res;
 		}
+		this.attacks.add(res);
+		return res;
+	}
+
+	public boolean isDuplicateAttack(Square attackLocation) {
+		//loops through every attack on the board and checks if one already exists at the current location
+		//returns true if another attack at the location exists, false if not
+		for(Result attack : this.getAttacks()) {
+			if((attack.getLocation().getRow() == attackLocation.getRow()) &&
+					(attack.getLocation().getColumn() == attackLocation.getColumn())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public List<Ship> getShips() {
