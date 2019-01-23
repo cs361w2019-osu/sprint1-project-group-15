@@ -159,7 +159,7 @@ public class Board {
 				return false;
 			}
 			for (int i = 0; i < size; i++) {
-				allProposedSquares.add(new Square(x, (char) ((int) y + 1)));
+				allProposedSquares.add(new Square(x, (char) ((int) y + i)));
 			}
 		}
 		//if max range is outside grid, return false;
