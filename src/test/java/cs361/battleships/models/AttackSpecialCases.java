@@ -20,41 +20,18 @@ public class AttackSpecialCases {
         Board board = new Board();
         assertTrue(board.placeShip(new Ship("MINESWEEPER"), 9, 'C', true));
 
-        //TODO: replace with the attack function to tidy up the test
-        //Once Attack has been implemented:
-        //board.attack(9, 'C');
-
-        AtackStatus status = AtackStatus.HIT;
-        Square location = new Square(9, 'C');
-        Ship target = board.getShips().get(0);
-
-        Result result = new Result();
-        result.setResult(status);
-        result.setLocation(location);
-        result.setShip(target);
-        List<Result> list = new ArrayList<>();
-        list.add(result);
-
-        board.setAttacks(list);
-        //End of TODO
+        Result result = board.attack(9, 'C');
 
         Square duplicateLocation = new Square(9, 'C');
-
-        assertTrue(result.getLocation().getColumn() == duplicateLocation.getColumn());
-        assertTrue(result.getLocation().getRow() == duplicateLocation.getRow());
-
         assertTrue(board.isDuplicateAttack(duplicateLocation));
 
         Square nonDuplicateLocation1 = new Square(8, 'C');
-
         assertFalse(board.isDuplicateAttack(nonDuplicateLocation1));
 
         Square nonDuplicateLocation2 = new Square(9, 'D');
-
         assertFalse(board.isDuplicateAttack(nonDuplicateLocation2));
 
         Square nonDuplicateLocation3 = new Square(6, 'B');
-
         assertFalse(board.isDuplicateAttack(nonDuplicateLocation3));
     }
 
@@ -62,34 +39,13 @@ public class AttackSpecialCases {
     public void SunkenShipTest() {
         Board board = new Board();
         Ship testShip = new Ship("MINESWEEPER");
-        assertTrue(board.placeShip(testShip, 9, 'C', true));
-        //ship coords are {(9, C) , (10, C)}
+        board.placeShip(testShip, 9, 'C', true);
 
-        //TODO: replace with the attack function to tidy up the test
-        //Once Attack has been implemented:
-        //board.attack(10, 'C');
-
-        Result firstAttack = generateAttack(9, 'C', AtackStatus.HIT, testShip);
-        board.getAttacks().add(firstAttack);
+        Result firstAttack = board.attack(9, 'C');
         assertFalse(testShip.isSunk(board.getAttacks()));
 
         //this should be the second and last space the ship occupies. Once this is hit, it should sink the ship
-        Result secondAttack = generateAttack(10, 'C', AtackStatus.HIT, testShip);
-
-        board.getAttacks().add(secondAttack);
+        Result secondAttack = board.attack(10, 'C');
         assertTrue(testShip.isSunk(board.getAttacks()));
     }
-
-    public Result generateAttack(int row, char col, AtackStatus attackResult, Ship targetShip) {
-        AtackStatus status = attackResult;
-        Square location = new Square(row, col);
-        Ship target = targetShip;
-
-        Result result = new Result();
-        result.setResult(status);
-        result.setLocation(location);
-        result.setShip(target);
-        return result;
-    }
-
 }
