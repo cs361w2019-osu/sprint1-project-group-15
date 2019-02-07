@@ -221,4 +221,14 @@ function initGame() {
     //event handlers for the modal
     document.getElementById("modal-close").addEventListener("click", close_modal);
     document.getElementById("modal-ok-button").addEventListener("click", close_modal);
+
+    // event handler for the surrender button
+    document.getElementById("surrender").addEventListener("click", function() {
+        game.playersBoard.attacks.result = "SURRENDER";
+        var surrenderText = "You forfeited the game. Victory goes to the opponent!"
+        document.getElementById("player_prompt").textContent = surrenderText;
+        if(!gameIsOver) alert(surrenderText);
+        gameIsOver = true;
+    });
+
 };
