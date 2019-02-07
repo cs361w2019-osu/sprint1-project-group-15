@@ -172,3 +172,46 @@ td:hover {
 
 /* ==============================================================
   End of modal styles*/
+
+.striked{
+      text-decoration: line-through;
+}
+
+#shipTracker {
+    position: absolute;
+    bottom: 200px;
+    right: 15px;
+}
+
+#ttt {
+ 	 border: 1px solid black;
+ 	 border-collapse: collapse;
+	}
+
+#tt {
+ 	border: 1px solid black;
+}
+
+#dest{
+ 	border: 1px solid black;
+}
+
+#dest2{
+    background-color: green;
+}
+
+#batt{
+    border: 1px solid black;
+}
+
+#batt2{
+    background-color: green;
+}
+
+#mine {
+    border: 1px solid black;
+}
+
+#mine2{
+    background-color: green;
+}

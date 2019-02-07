@@ -1,5 +1,6 @@
 package cs361.battleships.models;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
@@ -10,10 +11,12 @@ public class Ship {
 	@JsonProperty private List<Square> occupiedSquares;
 	@JsonProperty private String kind;
 	@JsonProperty private int size;
+	@JsonProperty private boolean Sunk;
 
 	public Ship() {
 		this.occupiedSquares = new ArrayList<>();
 		this.kind = new String();
+		this.Sunk = false;
 		this.size=0;
 	}
 
@@ -21,12 +24,15 @@ public class Ship {
 		this.kind = kind;
 		this.size=0;
 		if(kind.equals("MINESWEEPER")){
+			this.Sunk = false;
 			this.size=2;
 		}
 		else if(kind.equals("DESTROYER")){
+			this.Sunk = false;
 			this.size=3;
 		}
 		else if(kind.equals("BATTLESHIP")){
+			this.Sunk = false;
 			this.size=4;
 		}
 		this.occupiedSquares = new ArrayList<>();
@@ -70,6 +76,7 @@ public class Ship {
 		}
 
 		if(hits == this.getSize()) {
+			this.Sunk = true;
 			return true;
 		} else {
 			return false;

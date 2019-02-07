@@ -19,6 +19,26 @@ function makeGrid(table, isPlayer, gridSize) {
     }
 }
 
+function shipTracking(board){
+    //if(game.opponentsBoard.shipTrack("MINESWEEPER") == false)
+    game.opponentsBoard.ships.forEach((ship) => {
+        if(ship.kind === "MINESWEEPER" && ship.Sunk === true)
+            document.getElementById("mine").classList.add("striked");
+        if(ship.kind === "BATTLESHIP" && ship.Sunk === true)
+            document.getElementById("batt").classList.add("striked");
+        if(ship.kind === "DESTROYER" && ship.Sunk === true)
+            document.getElementById("dest").classList.add("striked");
+    });
+    game.playersBoard.ships.forEach((ship) => {
+        if(ship.kind === "MINESWEEPER" && ship.Sunk === true)
+            document.getElementById("mine2").classList.add("striked");
+        if(ship.kind === "BATTLESHIP" && ship.Sunk === true)
+            document.getElementById("batt2").classList.add("striked");
+        if(ship.kind === "DESTROYER" && ship.Sunk === true)
+            document.getElementById("dest2").classList.add("striked");
+    });
+}
+
 function markHits(board, elementId, surrenderText) {
     board.attacks.forEach((attack) => {
         let className;
@@ -26,8 +46,10 @@ function markHits(board, elementId, surrenderText) {
             className = "miss";
         else if (attack.result === "HIT")
             className = "hit";
-        else if (attack.result === "SUNK")
+        else if (attack.result === "SUNK"){
+            shipTracking(board);
             className = "sink";
+            }
         else if (attack.result === "SURRENDER") {
             className = "sink";
             document.getElementById("player_prompt").textContent=surrenderText+"!";
@@ -53,7 +75,6 @@ function redrawGrid() {
     if (game === undefined) {
         return;
     }
-
     game.playersBoard.ships.forEach((ship) => ship.occupiedSquares.forEach((square) => {
         document.getElementById("player").rows[square.row-1].cells[square.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add("occupied");
     }));

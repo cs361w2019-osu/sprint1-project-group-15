@@ -100,7 +100,6 @@ public class Board {
 		return false;
 	}
 
-
 	//Returns the ship on a given coordinate
 	private Ship getShip(int x, char y){
 		Square sq = new Square(x, y);
