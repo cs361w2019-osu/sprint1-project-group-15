@@ -172,3 +172,24 @@ td:hover {
 
 /* ==============================================================
   End of modal styles*/
+
+#ttt {
+ 	 border: 1px solid black;
+ 	 border-collapse: collapse;
+	}
+
+#tt {
+  	padding: 5px;
+	}
+
+#dest{
+	background-color: rgba(0, 0, 0, 0.85);
+}
+
+#batt{
+	background-color: rgba(0, 0, 0, 0.85);
+}
+
+#mine {
+	background-color: rgba(0, 0, 0, 0.85);
+}

@@ -100,6 +100,13 @@ public class Board {
 		return false;
 	}
 
+	public boolean shipTrack(String shipName){
+		for(Ship ships : this.getShips()){
+			if(shipName == ships.getKind())
+				return true;
+		}
+		return false;
+	}
 
 	//Returns the ship on a given coordinate
 	private Ship getShip(int x, char y){
