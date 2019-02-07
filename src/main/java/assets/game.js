@@ -87,7 +87,8 @@ function sendXhr(method, url, data, handler) {
     var req = new XMLHttpRequest();
     req.addEventListener("load", function(event) {
         if (req.status != 200) {
-            alert("Cannot complete the action");
+            //alert("Cannot complete the action");
+            show_modal();
             return;
         }
         handler(JSON.parse(req.responseText));
@@ -124,6 +125,28 @@ function place(size) {
     }
 }
 
+function set_modal_text() {
+    modal_text = document.getElementById("modal-main-text");
+    if(isSetup) {
+        //invalid ship placement
+        modal_text.innerText = "Warning: Invalid ship placement detected. Please click the ship you would like to place, and select a valid location.";
+    } else {
+        //invalid attack
+        modal_text.innerText = "The attack you just tried to make is invalid. Please try again.";
+    }
+}
+
+function close_modal(){
+    document.getElementById("modal-backdrop").classList.add("hidden");
+    document.getElementById("error-modal").classList.add("hidden");
+}
+
+function show_modal() {
+    set_modal_text();
+    document.getElementById("modal-backdrop").classList.remove("hidden");
+    document.getElementById("error-modal").classList.remove("hidden");
+}
+
 function initGame() {
     makeGrid(document.getElementById("opponent"), false);
     makeGrid(document.getElementById("player"), true);
@@ -136,10 +159,14 @@ function initGame() {
        registerCellListener(place(3));
     });
     document.getElementById("place_battleship").addEventListener("click", function(e) {
-        shipType = "BATTLESHIP";
+       shipType = "BATTLESHIP";
        registerCellListener(place(4));
     });
     sendXhr("GET", "/game", {}, function(data) {
         game = data;
     });
+
+    //event handlers for the modal
+    document.getElementById("modal-close").addEventListener("click", close_modal);
+    document.getElementById("modal-ok-button").addEventListener("click", close_modal);
 };

@@ -7,28 +7,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/assets/css/custom.css">
 
-<body>
-    <div class="container">
-        
-        <#include "header.ftl.html"/>
-        
-        <#if (flash.error)??>
-            <div class="alert alert-danger">
-                ${flash.error}
-            </div>
-        </#if>
-        
-        <#if (flash.success)??>
-            <div class="alert alert-success">
-                ${flash.success}
-            </div>
-        </#if>
+    <body>
+        <div class="container">
 
-        <#nested/>
+            <#include "header.ftl.html"/>
 
-        <#include "footer.ftl.html"/>
-        
-    </div> <!-- /container -->
-</body>
+
+            <#if (flash.error)??>
+                <div class="alert alert-danger">
+                    ${flash.error}
+                </div>
+            </#if>
+
+            <#if (flash.success)??>
+                <div class="alert alert-success">
+                    ${flash.success}
+                </div>
+            </#if>
+            <#include "error_modal.ftl.html"/>
+            <#nested/>
+
+            <#include "footer.ftl.html"/>
+        </div> <!-- /container -->
+    </body>
 </html>
 </#macro>

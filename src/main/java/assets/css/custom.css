@@ -2,40 +2,125 @@
 -------------------------------------------------- */
 
 .battleGrid {
-    border: 1px solid black;
-    border-spacing: 0px;
+	border: 1px solid black;
+	border-spacing: 0px;
 }
 
 .battleGrid tr {
-    border: 1px solid black;
-    height: 30px;
+	border: 1px solid black;
+	height: 30px;
 }
 
 .battleGrid td {
-    border: 1px solid black;
-    width: 30px;
+	border: 1px solid black;
+	width: 30px;
 }
 
 td:hover {
-    background-color: gray;
+	background-color: gray;
 }
 
 .placed {
-    background-color: gray;
+	background-color: gray;
 }
 
 .occupied {
-    background-color: black;
+	background-color: black;
 }
 
 .hit {
-    background-color: orange;
+	background-color: orange;
 }
 
 .sink {
-    background-color: red;
+	background-color: red;
 }
 
 .miss {
-    background-color: blue;
+	background-color: blue;
 }
+
+
+/* Modal Styles
+==============================================================*/
+
+#modal-backdrop {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 1000;
+	background-color: rgba(0, 0, 0, 0.85);
+}
+
+.hidden {
+	display: none;
+}
+
+#error-modal {
+	position: absolute;
+	top: 25%;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 1010;
+}
+
+.modal-text {
+	font-size: 30px;
+}
+
+#modal-ok-button {
+	font-size: 25px;
+	margin-left: 45%;
+	margin-right: 45%;
+	margin-bottom: 1%;
+	cursor: pointer;
+}
+
+.modal-dialog {
+	width: auto;
+	max-width: 600px;
+	min-width: 350px;
+	min-height: 200px;
+	margin: 40px auto;
+	background-color: #fff;
+	border-radius: 0px;
+}
+
+.modal-header {
+	position: relative;
+	padding: 10px 20px;
+	background-color: red;
+}
+
+.modal-header h3 {
+	margin: 0;
+	font-size: 35px;
+	margin-left: 40%;
+	margin-right: 40%;
+}
+
+#modal-close {
+	position: absolute;
+	right: 10px;
+	top: 5px;
+	font-size: 40px;
+	border: none;
+	background: none;
+	padding: 0;
+	cursor: pointer;
+}
+
+.modal-body {
+	padding: 20px;
+}
+
+#modal-ok-button:hover {
+	background-color: #eee;
+}
+
+
+/* ==============================================================
+  End of modal styles*/
