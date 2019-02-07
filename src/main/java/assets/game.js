@@ -3,13 +3,16 @@ var placedShips = 0;
 var game;
 var shipType;
 var vertical;
+var gameIsOver = false;
 
-function makeGrid(table, isPlayer) {
+function makeGrid(table, isPlayer, gridSize) {
     for (i=0; i<10; i++) {
         let row = document.createElement('tr');
+        row.style.height=gridSize+"px";
         for (j=0; j<10; j++) {
             let column = document.createElement('td');
-            column.addEventListener("click", cellClick);
+            column.style.width=gridSize+"px";
+            if(gridSize == newBig()) column.addEventListener("click", cellClick);
             row.appendChild(column);
         }
         table.appendChild(row);
@@ -24,9 +27,13 @@ function markHits(board, elementId, surrenderText) {
         else if (attack.result === "HIT")
             className = "hit";
         else if (attack.result === "SUNK")
-            className = "hit"
-        else if (attack.result === "SURRENDER")
-            alert(surrenderText);
+            className = "sink";
+        else if (attack.result === "SURRENDER") {
+            className = "sink";
+            document.getElementById("player_prompt").textContent=surrenderText+"!";
+            if(!gameIsOver) alert(surrenderText);
+            gameIsOver = true;
+        }
         document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add(className);
     });
 }
@@ -34,8 +41,15 @@ function markHits(board, elementId, surrenderText) {
 function redrawGrid() {
     Array.from(document.getElementById("opponent").childNodes).forEach((row) => row.remove());
     Array.from(document.getElementById("player").childNodes).forEach((row) => row.remove());
-    makeGrid(document.getElementById("opponent"), false);
-    makeGrid(document.getElementById("player"), true);
+
+    if(placedShips==3) {
+        makeGrid(document.getElementById("opponent"), false, newBig());
+        makeGrid(document.getElementById("player"), true, newSmall());
+    } else {
+        makeGrid(document.getElementById("opponent"), false, newSmall());
+        makeGrid(document.getElementById("player"), true, newBig());
+    }
+
     if (game === undefined) {
         return;
     }
@@ -68,12 +82,17 @@ function cellClick() {
     if (isSetup) {
         sendXhr("POST", "/place", {game: game, shipType: shipType, x: row, y: col, isVertical: vertical}, function(data) {
             game = data;
-            redrawGrid();
             placedShips++;
             if (placedShips == 3) {
+                document.getElementById("player_prompt").textContent="Select Your Next Attack";
+                document.getElementById("play_board").classList.toggle("small");
+                document.getElementById("opp_board").classList.toggle("small");
+                document.getElementById("play_board").classList.toggle("big");
+                document.getElementById("opp_board").classList.toggle("big");
                 isSetup = false;
                 registerCellListener((e) => {});
             }
+            redrawGrid();
         });
     } else {
         sendXhr("POST", "/attack", {game: game, x: row, y: col}, function(data) {
@@ -125,6 +144,7 @@ function place(size) {
     }
 }
 
+
 function set_modal_text() {
     modal_text = document.getElementById("modal-main-text");
     if(isSetup) {
@@ -147,9 +167,20 @@ function show_modal() {
     document.getElementById("error-modal").classList.remove("hidden");
 }
 
+function newBig() {
+    return Math.floor(Math.min(document.documentElement.clientWidth, document.documentElement.clientHeight) * .85 / 10);
+}
+
+function newSmall() {
+    return Math.floor(Math.min(document.documentElement.clientWidth, document.documentElement.clientHeight) * .40 / 10);
+}
+
 function initGame() {
-    makeGrid(document.getElementById("opponent"), false);
-    makeGrid(document.getElementById("player"), true);
+    makeGrid(document.getElementById("opponent"), false, newSmall());
+    makeGrid(document.getElementById("player"), true, newBig());
+    window.addEventListener("resize", function(e) {
+            redrawGrid();
+    });
     document.getElementById("place_minesweeper").addEventListener("click", function(e) {
         shipType = "MINESWEEPER";
        registerCellListener(place(2));
