@@ -1,5 +1,55 @@
 /* Add additional stylesheets below
 -------------------------------------------------- */
+h1 {
+    position: absolute;
+    width: 80%;
+    left: 3%;
+    top: 2%;
+    font-family: monospace;
+    font-size: 36px;
+    padding: 0px;
+    margin: 5px;
+    z-index: -2;
+}
+h2 {
+    color: red;
+    position: absolute;
+    right: 0px;
+    width: 25%;
+    text-align: center;
+    top: 42%;
+    font-family: monospace;
+
+}
+
+.small {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #cccccc;
+    z-index: -1;
+}
+.big {
+    position: absolute;
+    bottom: 5%;
+    left: 5%;
+    background: white;
+    z-index: 2;
+}
+
+footer {
+    display: none;
+}
+
+hr {
+    display: none;
+}
+
+ul {
+    position: absolute;
+    right: 50px;
+    bottom: 50px;
+}
 
 .battleGrid {
     border: 1px solid black;
@@ -8,12 +58,10 @@
 
 .battleGrid tr {
     border: 1px solid black;
-    height: 30px;
 }
 
 .battleGrid td {
     border: 1px solid black;
-    width: 30px;
 }
 
 td:hover {

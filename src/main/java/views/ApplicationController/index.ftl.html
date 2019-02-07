@@ -2,13 +2,15 @@
 <@layout.myLayout "Home page">    
 
 
-<h1>The Battleship game</h1>
+<h1>BATTLESHIP: Battle Royale!</h1>
+<h2 id="player_prompt">Place your Ships</h2>
 
-<table id="opponent" class="battleGrid">
-</table>
-
-<table id="player" class="battleGrid">
-</table>
+<div id="opp_board" class="small">
+    <table id="opponent" class="battleGrid"></table>
+</div>
+<div id="play_board" class="big">
+    <table id="player" class="battleGrid"></table>
+</div>
 
 <ul>
     <li><button id="place_minesweeper">Place Minesweeper</button></li>

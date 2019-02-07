@@ -49,12 +49,12 @@ public class Game {
 
     private char randCol() {
         //return 'A' to 'J'
-        return (char)(Math.random()*9+65);
+        return (char)(Math.random()*10+65);
     }
 
     private int randRow() {
         //return 1-10
-        return (int)(Math.random()*9+1);
+        return (int)(Math.random()*10+1);
     }
 
     private boolean randVertical() {
