@@ -27,9 +27,9 @@ function markHits(board, elementId, surrenderText) {
         else if (attack.result === "HIT")
             className = "hit";
         else if (attack.result === "SUNK")
-            className = "sink"
+            className = "sink";
         else if (attack.result === "SURRENDER") {
-            className = "sink"
+            className = "sink";
             document.getElementById("player_prompt").textContent=surrenderText+"!";
             if(!gameIsOver) alert(surrenderText);
             gameIsOver = true;
