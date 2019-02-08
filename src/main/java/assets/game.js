@@ -114,6 +114,7 @@ function cellClick() {
                 registerCellListener((e) => {});
             }
             redrawGrid();
+            doShipPlacement();
         });
     } else if (!gameIsOver) {
         sendXhr("POST", "/attack", {game: game, x: row, y: col}, function(data) {
@@ -196,9 +197,32 @@ function newSmall() {
     return Math.floor(Math.min(document.documentElement.clientWidth, document.documentElement.clientHeight) * .40 / 10);
 }
 
+function doShipPlacement() {
+    var prompt = document.getElementById("player_prompt");
+    var rotateKey = document.createElement("kbd");
+    rotateKey.textContent = "r";
+    if (placedShips==0){
+        shipType = "MINESWEEPER";
+        registerCellListener(place(2));
+        prompt.textContent = "Place your "+shipType+". Rotate: ";
+        prompt.appendChild(rotateKey);
+    } else if (placedShips==1){
+        shipType = "DESTROYER";
+        registerCellListener(place(3));
+        prompt.textContent = "Place your "+shipType+". Rotate: ";
+        prompt.appendChild(rotateKey);
+    } else if (placedShips==2){
+        shipType = "BATTLESHIP";
+        registerCellListener(place(4));
+        prompt.textContent = "Place your "+shipType+". Rotate: ";
+        prompt.appendChild(rotateKey);
+    }
+}
+
 function initGame() {
     makeGrid(document.getElementById("opponent"), false, newSmall());
     makeGrid(document.getElementById("player"), true, newBig());
+
     window.addEventListener("resize", function(e) {
             redrawGrid();
     });
@@ -237,10 +261,17 @@ function initGame() {
     // event handler for the surrender button
     document.getElementById("surrender").addEventListener("click", function() {
         game.playersBoard.attacks.result = "SURRENDER";
-        var surrenderText = "You forfeited the game. Victory goes to the opponent!"
-        document.getElementById("player_prompt").textContent = surrenderText;
-        if(!gameIsOver) alert(surrenderText);
-        gameIsOver = true;
+        var surrenderText = "You forfeited the game.";
+        if(!gameIsOver && confirm("Do you want to surrender?")) {
+            alert(surrenderText);
+            gameIsOver = true;
+            document.getElementById("player_prompt").textContent = surrenderText;
+        }
     });
 
+    document.getElementById("new_game").addEventListener("click", function() {
+        if(confirm("Do you want to start a new game?")) location.reload();
+    });
+
+    doShipPlacement();
 };
