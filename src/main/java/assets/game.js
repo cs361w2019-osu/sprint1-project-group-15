@@ -202,6 +202,14 @@ function initGame() {
     window.addEventListener("resize", function(e) {
             redrawGrid();
     });
+
+    // implement keypress "R" to rotate
+    document.addEventListener('keypress', function(e) {
+        if (e.which == 82 || e.which == 114) { // guard against CAPS LOCK
+          console.log(e.which);
+          document.getElementById("is_vertical").click();
+        }
+      });
     document.getElementById("place_minesweeper").addEventListener("click", function(e) {
         shipType = "MINESWEEPER";
        registerCellListener(place(2));
