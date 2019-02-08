@@ -208,6 +208,10 @@ function initGame() {
         if (e.which == 82 || e.which == 114) { // guard against CAPS LOCK
           console.log(e.which);
           document.getElementById("is_vertical").click();
+          redrawGrid();
+          if (shipType=="MINESWEEPER") registerCellListener(place(2));
+          else if (shipType=="DESTROYER") registerCellListener(place(3));
+          else if (shipType=="BATTLESHIP") registerCellListener(place(4));
         }
       });
     document.getElementById("place_minesweeper").addEventListener("click", function(e) {
