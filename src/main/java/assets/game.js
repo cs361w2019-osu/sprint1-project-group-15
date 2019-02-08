@@ -12,7 +12,7 @@ function makeGrid(table, isPlayer, gridSize) {
         for (j=0; j<10; j++) {
             let column = document.createElement('td');
             column.style.width=gridSize+"px";
-            if(gridSize == newBig()) column.addEventListener("click", cellClick);
+            if(gridSize == newBig() && !gameIsOver) column.addEventListener("click", cellClick);
             row.appendChild(column);
         }
         table.appendChild(row);
@@ -100,7 +100,7 @@ function registerCellListener(f) {
 function cellClick() {
     let row = this.parentNode.rowIndex + 1;
     let col = String.fromCharCode(this.cellIndex + 65);
-    if (isSetup) {
+    if (isSetup && !gameIsOver) {
         sendXhr("POST", "/place", {game: game, shipType: shipType, x: row, y: col, isVertical: vertical}, function(data) {
             game = data;
             placedShips++;
@@ -115,7 +115,7 @@ function cellClick() {
             }
             redrawGrid();
         });
-    } else {
+    } else if (!gameIsOver) {
         sendXhr("POST", "/attack", {game: game, x: row, y: col}, function(data) {
             game = data;
             redrawGrid();
@@ -208,6 +208,10 @@ function initGame() {
         if (e.which == 82 || e.which == 114) { // guard against CAPS LOCK
           console.log(e.which);
           document.getElementById("is_vertical").click();
+          redrawGrid();
+          if (shipType=="MINESWEEPER") registerCellListener(place(2));
+          else if (shipType=="DESTROYER") registerCellListener(place(3));
+          else if (shipType=="BATTLESHIP") registerCellListener(place(4));
         }
       });
     document.getElementById("place_minesweeper").addEventListener("click", function(e) {
