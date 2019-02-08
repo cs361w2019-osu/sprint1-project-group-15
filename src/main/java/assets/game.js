@@ -12,7 +12,7 @@ function makeGrid(table, isPlayer, gridSize) {
         for (j=0; j<10; j++) {
             let column = document.createElement('td');
             column.style.width=gridSize+"px";
-            if(gridSize == newBig()) column.addEventListener("click", cellClick);
+            if(gridSize == newBig() && !gameIsOver) column.addEventListener("click", cellClick);
             row.appendChild(column);
         }
         table.appendChild(row);
