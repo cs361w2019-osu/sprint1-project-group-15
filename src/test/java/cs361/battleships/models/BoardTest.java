@@ -105,5 +105,22 @@ public class BoardTest {
 
         System.out.println(res2.getResult());
     }
+
+    @Test
+    public void testCaptainsQuarters(){
+        Board board = new Board();
+        board.placeShip(new Ship("BATTLESHIP"), 4, 'D', true);
+        board.placeShip(new Ship("MINESWEEPER"), 1, 'B', true);
+        board.placeShip(new Ship("DESTROYER"),3,'F',false);
+
+        for(Ship ships : board.getShips()){
+            if((ships.getKind() == "BATTLESHIP") &&(ships.getCaptainsQuarters().getRow() == 6) && ships.getCaptainsQuarters().getColumn() == 'D')
+                System.out.println("Captain's Quarters on Battleship Found");
+            if((ships.getKind() == "MINESWEEPER") &&(ships.getCaptainsQuarters().getRow() == 1) && ships.getCaptainsQuarters().getColumn() == 'B')
+                System.out.println("Captain's Quarters on Minesweeper Found");
+            if(ships.getKind() == "DESTROYER" && ships.getCaptainsQuarters().getRow() == 3 && ships.getCaptainsQuarters().getColumn() == 'G')
+                System.out.println("Captain's Quarters on Destroyer Found");
+        }
+    }
 }
 
