@@ -60,10 +60,11 @@ public class Board {
 			if (!isCaptainsQuarter(x,y) ) {
 				res.setResult(AttackStatus.HIT);
 			}
-			else res.setResult(AttackStatus.MISS);
+			else
+				res.setResult(AttackStatus.MISS);
 
-			if((res.getShip()).isSunk(this.getAttacks())) {
-			res.setResult(AttackStatus.SUNK);
+			if ((res.getShip()).isSunk(this.getAttacks())) {
+				res.setResult(AttackStatus.SUNK);
 				if (!this.shipsLeft()) {
 					res.setResult(AttackStatus.SURRENDER);
 				}

@@ -55,9 +55,9 @@ function markHits(board, elementId, surrenderText) {
         let className;
         if (attack.result === "MISS")
             className = "miss";
-        else if (attack.result === "HIT")
+        if (attack.result === "HIT")
             className = "hit";
-        else if (attack.result === "SUNK"){
+        if (attack.result === "SUNK"){
             className = "sink";
         }
         else if (attack.result === "SURRENDER") {
@@ -66,7 +66,8 @@ function markHits(board, elementId, surrenderText) {
             if(!gameIsOver) alert(surrenderText);
             gameIsOver = true;
         }
-        document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add(className);
+        document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].className = '';
+        document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].className = className;
     });
 }
 
