@@ -35,6 +35,7 @@ public class AttackSpecialCases {
         assertFalse(board.isDuplicateAttack(nonDuplicateLocation3));
     }
 
+    /* No longer needed since the implementation of captain's quarters
     @Test
     public void SunkenShipTest() {
         Board board = new Board();
@@ -48,4 +49,5 @@ public class AttackSpecialCases {
         Result secondAttack = board.attack(10, 'C');
         assertTrue(testShip.isSunk(board.getAttacks()));
     }
+    */
 }

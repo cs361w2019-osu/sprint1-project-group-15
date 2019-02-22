@@ -49,16 +49,21 @@ public class Board {
 		res.setLocation(sq1);
 		//If ship is present on coordinates
 
-		if(isDuplicateAttack(sq1)) {
+		if(isDuplicateAttack(sq1) && !isCaptainsQuarter(x,y) ) {
 			res.setResult(AttackStatus.INVALID);
 			return res;
 		}
 		this.attacks.add(res);
 		if(shipPresent(x,y)){
 			res.setShip(getShip(x,y));
-			res.setResult(AttackStatus.HIT);
+
+			if (!isCaptainsQuarter(x,y) ) {
+				res.setResult(AttackStatus.HIT);
+			}
+			else res.setResult(AttackStatus.MISS);
+
 			if((res.getShip()).isSunk(this.getAttacks())) {
-				res.setResult(AttackStatus.SUNK);
+			res.setResult(AttackStatus.SUNK);
 				if (!this.shipsLeft()) {
 					res.setResult(AttackStatus.SURRENDER);
 				}
@@ -69,7 +74,7 @@ public class Board {
 			res.setResult(AttackStatus.INVALID);
 		}
 		//If no ship is on the space
-		else{
+		else {
 			res.setResult(AttackStatus.MISS);
 		}
 		return res;
@@ -80,7 +85,7 @@ public class Board {
 		//returns true if another attack at the location exists, false if not
 		for(Result attack : this.getAttacks()) {
 			if((attack.getLocation().getRow() == attackLocation.getRow()) &&
-					(attack.getLocation().getColumn() == attackLocation.getColumn())) {
+				(attack.getLocation().getColumn() == attackLocation.getColumn())) {
 				return true;
 			}
 		}
@@ -125,14 +130,29 @@ public class Board {
 		this.attacks = attacks;
 	}
 
+	// Helper function to check if a coordinate is a captain's quarter
+	public boolean isCaptainsQuarter(int x, char y) {
+		Square sq = new Square(x, y);
+		for(Ship ships : this.getShips()) {
+			if (isSquareConflict(sq, ships.getCaptainsQuarters())) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	/*
 	This function checks if a ship is present, returns true or false
 	 */
 	private boolean shipPresent(int x, char y){
 		Square sq = new Square(x, y);
 		for(Ship ships : this.getShips()){
-			for(Square squares : ships.getOccupiedSquares()){
+			for(Square squares : ships.getOccupiedSquares()) {
 				if (isSquareConflict(sq, squares)) {
+					if (isSquareConflict(sq, ships.getCaptainsQuarters())) {
+						ships.deductHealth();
+					}
 					return true;
 				}
 			}
