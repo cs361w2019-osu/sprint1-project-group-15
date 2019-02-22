@@ -189,8 +189,7 @@ public class Board {
 	}
 
 	public static boolean isSquareConflict(Square sq1, Square sq2) {
-		if(sq1.getRow()==sq2.getRow() && sq1.getColumn()==sq2.getColumn()) return true;
-		else return false;
+		return (sq1.getRow()==sq2.getRow() && sq1.getColumn()==sq2.getColumn());
 	}
 
 	public static char randCol() {
@@ -204,11 +203,6 @@ public class Board {
 	}
 
 	public static boolean randVertical() {
-		if(Math.random() >=.5){
-			return false;
-		}
-		else{
-			return true;
-		}
+		return (Math.random() >=.5);
 	}
 }
