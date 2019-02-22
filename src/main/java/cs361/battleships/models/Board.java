@@ -50,27 +50,27 @@ public class Board {
 		//If ship is present on coordinates
 
 		if(isDuplicateAttack(sq1)) {
-			res.setResult(AtackStatus.INVALID);
+			res.setResult(AttackStatus.INVALID);
 			return res;
 		}
 		this.attacks.add(res);
 		if(shipPresent(x,y)){
 			res.setShip(getShip(x,y));
-			res.setResult(AtackStatus.HIT);
+			res.setResult(AttackStatus.HIT);
 			if((res.getShip()).isSunk(this.getAttacks())) {
-				res.setResult(AtackStatus.SUNK);
+				res.setResult(AttackStatus.SUNK);
 				if (!this.shipsLeft()) {
-					res.setResult(AtackStatus.SURRENDER);
+					res.setResult(AttackStatus.SURRENDER);
 				}
 			}
 		}
 		//If input is out of bounds or incorrect. Needs to include duplicate attack as well.
 		else if((x>10 || x<0) || (y > 'J' || y < 'A')){
-			res.setResult(AtackStatus.INVALID);
+			res.setResult(AttackStatus.INVALID);
 		}
 		//If no ship is on the space
 		else{
-			res.setResult(AtackStatus.MISS);
+			res.setResult(AttackStatus.MISS);
 		}
 		return res;
 	}
