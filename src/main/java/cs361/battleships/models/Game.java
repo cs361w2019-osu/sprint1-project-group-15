@@ -7,7 +7,7 @@ import static cs361.battleships.models.AttackStatus.*;
 public class Game {
 
     @JsonProperty private Board playersBoard = new Board();
-    @JsonProperty private Board opponentsBoard = new Board();
+    @JsonProperty private Board opponentsBoard = new OpponentBoard();
 
     /*
 	DO NOT change the signature of this method. It is used by the grading scripts.
@@ -15,13 +15,7 @@ public class Game {
     public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
         boolean successful = playersBoard.placeShip(new Ship(ship.getKind()), x, y, isVertical);
         if (!successful) return false;
-
-        boolean opponentPlacedSuccessfully;
-        do {
-            // AI places random ships, so it might try and place overlapping ships
-            // let it try until it gets it right
-            opponentPlacedSuccessfully = opponentsBoard.placeShip(new Ship(ship.getKind()), randRow(), randCol(), randVertical());
-        } while (!opponentPlacedSuccessfully);
+        opponentsBoard.placeShip(new Ship(ship.getKind()), Board.randRow(), Board.randCol(), Board.randVertical());
         return true;
     }
 
@@ -33,33 +27,7 @@ public class Game {
         if (playerAttack.getResult() == INVALID) {
             return false;
         }
-
-        Result opponentAttackResult;
-        do {
-            // AI does random attacks, so it might attack the same spot twice
-            // let it try until it gets it right
-            opponentAttackResult = playersBoard.attack(randRow(), randCol());
-        } while(opponentAttackResult.getResult() == INVALID);
-
+        playersBoard.attack(Board.randRow(), Board.randCol());
         return true;
-    }
-
-    private char randCol() {
-        //return 'A' to 'J'
-        return (char)(Math.random()*10+65);
-    }
-
-    private int randRow() {
-        //return 1-10
-        return (int)(Math.random()*10+1);
-    }
-
-    private boolean randVertical() {
-        if(Math.random() >=.5){
-            return false;
-        }
-        else{
-            return true;
-        }
     }
 }

@@ -63,8 +63,8 @@ public class BoardTest {
         Result res = board.attack(16, 'B');
         Result res2 = board.attack(5, 'Z');
 
-        System.out.println(res2.getResult());
-        System.out.println(res.getResult());
+        assertTrue(res2.getResult() == AttackStatus.INVALID);
+        assertTrue(res.getResult() == AttackStatus.INVALID);
     }
 
     @Test
@@ -73,7 +73,7 @@ public class BoardTest {
         board.placeShip(new Ship("BATTLESHIP"), 6, 'B', true);
         Result res = board.attack(6, 'B');
 
-        System.out.println(res.getResult());
+        assertTrue(res.getResult() == AttackStatus.HIT);
     }
 
     @Test
@@ -82,7 +82,7 @@ public class BoardTest {
         board.placeShip(new Ship("BATTLESHIP"), 6, 'B', true);
         Result res = board.attack(1, 'B');
 
-        System.out.println(res.getResult());
+        assertTrue(res.getResult() == AttackStatus.MISS);
     }
 
     @Test
@@ -93,7 +93,7 @@ public class BoardTest {
         Result res = board.attack(1, 'B');
         Result res2 = board.attack(2, 'B');
 
-        System.out.println(res2.getResult());
+        assertTrue(res2.getResult() == AttackStatus.SUNK);
     }
 
     @Test
@@ -103,7 +103,22 @@ public class BoardTest {
         Result res = board.attack(1, 'B');
         Result res2 = board.attack(2, 'B');
 
-        System.out.println(res2.getResult());
+        assertTrue(res2.getResult() == AttackStatus.SURRENDER);
+    }
+
+    @Test
+    public void testClearShips() {
+        Board board = new Board();
+        board.placeShip(new Ship("MINESWEEPER"), 3, 'C', true);
+
+        assertFalse(board.getShips().isEmpty());
+        assertTrue(board.shipsLeft());
+
+        board.clearShips();
+
+        assertTrue(board.getShips().isEmpty());
+        assertFalse(board.shipsLeft());
+
     }
 }
 
