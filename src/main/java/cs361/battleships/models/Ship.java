@@ -12,6 +12,7 @@ public class Ship {
 	@JsonProperty private String kind;
 	@JsonProperty private int size;
 	@JsonProperty private boolean Sunk;
+	@JsonProperty private Square captainsQuarters;
 
 	public Ship() {
 		this.occupiedSquares = new ArrayList<>();
@@ -52,6 +53,18 @@ public class Ship {
 			if(vert) x++;
 			else y++;
 		}
+		createCaptainsQuarters();
+	}
+
+	public Square getCaptainsQuarters() { return this.captainsQuarters; }
+
+	public void createCaptainsQuarters(){
+		if(kind.equals("MINESWEEPER"))
+			captainsQuarters = occupiedSquares.get(0);
+		else if(kind.equals("DESTROYER"))
+			captainsQuarters = occupiedSquares.get(1);
+		else if(kind.equals("BATTLESHIP"))
+			captainsQuarters = occupiedSquares.get(2);
 	}
 
 	public int getSize(){
