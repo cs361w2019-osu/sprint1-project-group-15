@@ -26,6 +26,7 @@ public class Ship {
 	public Ship(String kind) {
 		this.kind = kind;
 		this.sunk=false;
+		this.size=0;
 		if(kind.equals("MINESWEEPER")){
 			this.size=2;
 			this.health=1;

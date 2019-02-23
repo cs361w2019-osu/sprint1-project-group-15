@@ -103,7 +103,7 @@ public class BoardTest {
         Result res = board.attack(1, 'B');
         Result res2 = board.attack(2, 'B');
 
-        assertTrue(res2.getResult() == AttackStatus.SURRENDER);
+        assertTrue(res.getResult() == AttackStatus.SURRENDER);
     }
 
     @Test

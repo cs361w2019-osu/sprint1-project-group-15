@@ -199,14 +199,22 @@ function drawSonar (row, col) {
                 try {
                     let tableRow = table.rows[row+x];
                     cell = tableRow.cells[col];
-                    if(square.row === gameRow+x && square.column === gameCol) cell.classList.toggle("occupied");
+                    if (!cell.classList.contains("occupied")) cell.className="placed";
+                    if(square.row === gameRow+x && square.column === gameCol) {
+                        cell.classList.remove("placed");
+                        cell.classList.add("occupied");
+                    }
                 } catch(error) {}
             }
             for (let y=-2; y<3; y++) {
                 let cell;
                 try {
                     cell = table.rows[row].cells[col+y];
-                    if(square.row === gameRow && square.column === String.fromCharCode(col+65+y) )  cell.classList.toggle("occupied");
+                    if (!cell.classList.contains("occupied")) cell.className="placed";
+                    if(square.row === gameRow && square.column === String.fromCharCode(col+65+y) ){
+                        cell.classList.remove("placed");
+                        cell.classList.add("occupied");
+                    }
                 } catch(error) {}
             }
             for (let x=-1; x<2; x+=2) {
@@ -214,11 +222,14 @@ function drawSonar (row, col) {
                     let tableRow = table.rows[row+x];
                     for(let y =-1; y<2; y+=2) {
                         cell = tableRow.cells[col+y];
-                        if (square.row === gameRow+x && square.column === String.fromCharCode(col+65+y) ) cell.classList.toggle("occupied");
+                        if (!cell.classList.contains("occupied")) cell.className="placed";
+                        if (square.row === gameRow+x && square.column === String.fromCharCode(col+65+y) ) {
+                            cell.classList.remove("placed");
+                            cell.classList.add("occupied");
+                        }
                     }
                 } catch (error) {}
             }
-            if(square.row === row && square.column === col) table.rows[row].cells[col].classList.toggle("placed");
         });
     });
 }
@@ -289,13 +300,13 @@ function sonar() {
         }
 
         for (let x=-1; x<2; x+=2) {
-            try {
-                let tableRow = table.rows[row+x];
+            let tableRow = table.rows[row+x];
                 for(let y =-1; y<2; y+=2) {
+                    try {
                     cell = tableRow.cells[col+y];
                     cell.classList.toggle("placed");
+                    } catch (error) {}
                 }
-            } catch (error) {}
         }
 
         table.rows[row].cells[col].classList.toggle("placed");
