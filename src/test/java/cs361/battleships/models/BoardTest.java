@@ -122,5 +122,32 @@ public class BoardTest {
                 System.out.println("Captain's Quarters on Destroyer Found");
         }
     }
+
+    // Test attacks on the captain's quarters
+    @Test
+    public void testAttackingCaptainsQuarters(){
+        Board board = new Board();
+        Result res;
+
+        board.placeShip(new Ship("BATTLESHIP"), 4, 'D', true);
+        board.placeShip(new Ship("MINESWEEPER"), 1, 'B', true);
+        board.placeShip(new Ship("DESTROYER"),3,'F',false);
+
+        // attack captain's quarters and print the results
+        System.out.println("Results from attacking captain's quarters:");
+
+        res = board.attack(6,'D');
+        System.out.println(res.getResult() );
+        res = board.attack(6,'D');
+        System.out.println(res.getResult() );
+
+        res = board.attack(3,'G');
+        System.out.println(res.getResult() );
+        res = board.attack(3,'G');
+        System.out.println(res.getResult() );
+
+        res = board.attack(1,'B');
+        System.out.println(res.getResult() );
+    }
 }
 

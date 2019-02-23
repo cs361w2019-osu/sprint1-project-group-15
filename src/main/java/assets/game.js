@@ -55,9 +55,9 @@ function markHits(board, elementId, surrenderText) {
         let className;
         if (attack.result === "MISS")
             className = "miss";
-        else if (attack.result === "HIT")
+        if (attack.result === "HIT")
             className = "hit";
-        else if (attack.result === "SUNK"){
+        if (attack.result === "SUNK"){
             className = "sink";
         }
         else if (attack.result === "SURRENDER") {
@@ -66,7 +66,8 @@ function markHits(board, elementId, surrenderText) {
             if(!gameIsOver) alert(surrenderText);
             gameIsOver = true;
         }
-        document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add(className);
+        document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].className = '';
+        document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].className = className;
     });
 }
 
@@ -93,6 +94,11 @@ function redrawGrid() {
     game.playersBoard.ships.forEach((ship) => ship.occupiedSquares.forEach((square) => {
         document.getElementById("player").rows[square.row-1].cells[square.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add("occupied");
     }));
+    // mark captain's quarters
+    game.playersBoard.ships.forEach((ship) => {
+        document.getElementById("player").rows[ship.captainsQuarters.row-1].cells[ship.captainsQuarters.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add("captainsQuarter");
+    });
+
     markHits(game.opponentsBoard, "opponent", "You won the game");
     markHits(game.playersBoard, "player", "You lost the game");
 }
