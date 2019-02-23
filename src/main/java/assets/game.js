@@ -4,6 +4,10 @@ var game;
 var shipType;
 var vertical;
 var gameIsOver = false;
+var shipsSunk = 0;
+var sonarPulse = 2;
+var sonarAvailable = false;
+var actionIsSonar = false;
 
 function makeGrid(table, isPlayer, gridSize) {
     for (i=0; i<10; i++) {
@@ -19,15 +23,21 @@ function makeGrid(table, isPlayer, gridSize) {
     }
 }
 
-function shipTracking(board){
-    //if(game.opponentsBoard.shipTrack("MINESWEEPER") == false)
+function shipTracking(){
+    var oppShipCount = 0;
     game.opponentsBoard.ships.forEach((ship) => {
-        if(ship.kind === "MINESWEEPER" && ship.Sunk === true)
+        if(ship.kind === "MINESWEEPER" && ship.Sunk === true){
             document.getElementById("mine").classList.add("striked");
-        if(ship.kind === "BATTLESHIP" && ship.Sunk === true)
+            oppShipCount++;
+        }
+        if(ship.kind === "BATTLESHIP" && ship.Sunk === true){
             document.getElementById("batt").classList.add("striked");
-        if(ship.kind === "DESTROYER" && ship.Sunk === true)
+            oppShipCount++;
+        }
+        if(ship.kind === "DESTROYER" && ship.Sunk === true){
             document.getElementById("dest").classList.add("striked");
+            oppShipCount++;
+        }
     });
     game.playersBoard.ships.forEach((ship) => {
         if(ship.kind === "MINESWEEPER" && ship.Sunk === true)
@@ -37,6 +47,7 @@ function shipTracking(board){
         if(ship.kind === "DESTROYER" && ship.Sunk === true)
             document.getElementById("dest2").classList.add("striked");
     });
+    shipsSunk=oppShipCount;
 }
 
 function markHits(board, elementId, surrenderText) {
@@ -44,25 +55,26 @@ function markHits(board, elementId, surrenderText) {
         let className;
         if (attack.result === "MISS")
             className = "miss";
-        else if (attack.result === "HIT")
+        if (attack.result === "HIT")
             className = "hit";
-        else if (attack.result === "SUNK"){
-            shipTracking(board);
+        if (attack.result === "SUNK"){
             className = "sink";
-            }
+        }
         else if (attack.result === "SURRENDER") {
             className = "sink";
             document.getElementById("player_prompt").textContent=surrenderText+"!";
             if(!gameIsOver) alert(surrenderText);
             gameIsOver = true;
         }
-        document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add(className);
+        document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].className = '';
+        document.getElementById(elementId).rows[attack.location.row-1].cells[attack.location.column.charCodeAt(0) - 'A'.charCodeAt(0)].className = className;
     });
 }
 
 function redrawGrid() {
     Array.from(document.getElementById("opponent").childNodes).forEach((row) => row.remove());
     Array.from(document.getElementById("player").childNodes).forEach((row) => row.remove());
+
 
     if(placedShips==3) {
         makeGrid(document.getElementById("opponent"), false, newBig());
@@ -72,14 +84,37 @@ function redrawGrid() {
         makeGrid(document.getElementById("player"), true, newBig());
     }
 
+    shipTracking();
+
+    sonarPulseUpdate();
+
     if (game === undefined) {
         return;
     }
     game.playersBoard.ships.forEach((ship) => ship.occupiedSquares.forEach((square) => {
         document.getElementById("player").rows[square.row-1].cells[square.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add("occupied");
     }));
+    // mark captain's quarters
+    game.playersBoard.ships.forEach((ship) => {
+        document.getElementById("player").rows[ship.captainsQuarters.row-1].cells[ship.captainsQuarters.column.charCodeAt(0) - 'A'.charCodeAt(0)].classList.add("captainsQuarter");
+    });
+
     markHits(game.opponentsBoard, "opponent", "You won the game");
     markHits(game.playersBoard, "player", "You lost the game");
+}
+
+function sonarPulseUpdate(){
+    if(!sonarAvailable && shipsSunk > 0 && sonarPulse > 0 && !gameIsOver){
+        sonarAvailable = true;
+    }
+
+    if(sonarAvailable && !gameIsOver){
+        var prompt = document.getElementById("player_prompt");
+        var sonarKey = document.createElement("kbd");
+        sonarKey.textContent = "s";
+        prompt.textContent = "Select Your Next Attack OR Deploy Sonar Pulse: ";
+        prompt.appendChild(sonarKey);
+    }
 }
 
 var oldListener;
@@ -95,6 +130,21 @@ function registerCellListener(f) {
         }
     }
     oldListener = f;
+}
+
+var oldOppListener;
+function registerOppCellListener(f) {
+    let el = document.getElementById("opponent");
+    for (i=0; i<10; i++) {
+        for (j=0; j<10; j++) {
+            let cell = el.rows[i].cells[j];
+            cell.removeEventListener("mouseover", oldListener);
+            cell.removeEventListener("mouseout", oldListener);
+            cell.addEventListener("mouseover", f);
+            cell.addEventListener("mouseout", f);
+        }
+    }
+    oldOppListener = f;
 }
 
 function cellClick() {
@@ -116,12 +166,62 @@ function cellClick() {
             redrawGrid();
             doShipPlacement();
         });
-    } else if (!gameIsOver) {
+    } else if (!gameIsOver && !actionIsSonar) {
         sendXhr("POST", "/attack", {game: game, x: row, y: col}, function(data) {
             game = data;
             redrawGrid();
-        })
+
+        });
+    } else if (!gameIsOver && actionIsSonar) {
+        actionIsSonar=false;
+        sonarPulse--;
+        if(sonarPulse==0) sonarAvailable=false;
+        redrawGrid();
+        alert("Sonar Time ("+row+", "+col+")");
+
+        drawSonar(row-1, this.cellIndex);
+        document.getElementById("player_prompt").textContent="Select Your Next Attack";
+
+        sonarPulseUpdate();
     }
+}
+
+function drawSonar (row, col) {
+
+    let table = document.getElementById("opponent");
+
+    gameRow = row + 1;
+    gameCol = String.fromCharCode(col + 65);
+
+    game.opponentsBoard.ships.forEach((ship) => {
+        ship.occupiedSquares.forEach((square) => {
+            for (let x=-2; x<3; x++) {
+                let cell;
+                try {
+                    let tableRow = table.rows[row+x];
+                    cell = tableRow.cells[col];
+                    if(square.row === gameRow+x && square.column === gameCol) cell.classList.toggle("occupied");
+                } catch(error) {}
+            }
+            for (let y=-2; y<3; y++) {
+                let cell;
+                try {
+                    cell = table.rows[row].cells[col+y];
+                    if(square.row === gameRow && square.column === String.fromCharCode(col+65+y) )  cell.classList.toggle("occupied");
+                } catch(error) {}
+            }
+            for (let x=-1; x<2; x+=2) {
+                try {
+                    let tableRow = table.rows[row+x];
+                    for(let y =-1; y<2; y+=2) {
+                        cell = tableRow.cells[col+y];
+                        if (square.row === gameRow+x && square.column === String.fromCharCode(col+65+y) ) cell.classList.toggle("occupied");
+                    }
+                } catch (error) {}
+            }
+            if(square.row === row && square.column === col) table.rows[row].cells[col].classList.toggle("placed");
+        });
+    });
 }
 
 function sendXhr(method, url, data, handler) {
@@ -163,6 +263,43 @@ function place(size) {
             }
             cell.classList.toggle("placed");
         }
+    }
+}
+
+function sonar() {
+    return function () {
+        let row = this.parentNode.rowIndex;
+        let col = this.cellIndex;
+        let table = document.getElementById("opponent");
+
+        for (let x=-2; x<3; x++) {
+            let cell;
+            try {
+                let tableRow = table.rows[row+x];
+                cell = tableRow.cells[col];
+                cell.classList.toggle("placed");
+            } catch(error) {}
+        }
+
+        for (let y=-2; y<3; y++) {
+            let cell;
+            try {
+                cell = table.rows[row].cells[col+y];
+                cell.classList.toggle("placed");
+            } catch(error) {}
+        }
+
+        for (let x=-1; x<2; x+=2) {
+            try {
+                let tableRow = table.rows[row+x];
+                for(let y =-1; y<2; y+=2) {
+                    cell = tableRow.cells[col+y];
+                    cell.classList.toggle("placed");
+                }
+            } catch (error) {}
+        }
+
+        table.rows[row].cells[col].classList.toggle("placed");
     }
 }
 
@@ -230,12 +367,19 @@ function initGame() {
     // implement keypress "R" to rotate
     document.addEventListener('keypress', function(e) {
         if (e.which == 82 || e.which == 114) { // guard against CAPS LOCK
-          console.log(e.which);
           document.getElementById("is_vertical").click();
           redrawGrid();
-          if (shipType=="MINESWEEPER") registerCellListener(place(2));
-          else if (shipType=="DESTROYER") registerCellListener(place(3));
-          else if (shipType=="BATTLESHIP") registerCellListener(place(4));
+          if (shipType=="MINESWEEPER" && isSetup) registerCellListener(place(2));
+          else if (shipType=="DESTROYER" && isSetup) registerCellListener(place(3));
+          else if (shipType=="BATTLESHIP" && isSetup) registerCellListener(place(4));
+        }
+        else if (e.which == 83 || e.which == 115){
+          if(sonarAvailable && shipsSunk > 0 && sonarPulse > 0 && !gameIsOver){
+            redrawGrid();
+            registerOppCellListener(sonar());
+            document.getElementById("player_prompt").textContent = "Select the Location to Reveal";
+            actionIsSonar=true;
+          }
         }
       });
     document.getElementById("place_minesweeper").addEventListener("click", function(e) {
