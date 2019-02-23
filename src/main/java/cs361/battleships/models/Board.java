@@ -9,13 +9,14 @@ public class Board {
 
 	@JsonProperty private List<Ship> ships;
 	@JsonProperty private List<Result> attacks;
-
+	@JsonProperty private int remainingShips;
 	/*
 	DO NOT change the signature of this method. It is used by the grading scripts.
 	 */
 	public Board() {
 		this.ships = new ArrayList<>();
 		this.attacks = new ArrayList<>();
+		this.remainingShips = 0;
 	}
 
 	/*
@@ -29,6 +30,7 @@ public class Board {
 		if (validLocation(shipSize, x, y, isVertical)) {
 			ship.populateSquares(x,y,isVertical);
 			this.ships.add(ship);
+			remainingShips++;
 			return true;
 		}
 		return false;
@@ -65,6 +67,7 @@ public class Board {
 
 			if ((res.getShip()).isSunk()) {
 				res.setResult(AttackStatus.SUNK);
+				remainingShips--;
 				if (!this.shipsLeft()) {
 					res.setResult(AttackStatus.SURRENDER);
 				}
@@ -98,12 +101,8 @@ public class Board {
 	}
 
 	//Needs isSunk for implementation
-	private boolean shipsLeft(){
-		for(Ship ships : this.getShips()){
-			if(!ships.isSunk())
-				return true;
-		}
-		return false;
+	protected boolean shipsLeft(){
+		return remainingShips > 0;
 	}
 
 	//Returns the ship on a given coordinate
@@ -121,6 +120,13 @@ public class Board {
 	public void setShips(List<Ship> ships) {
 		this.ships = ships;
 	}
+
+	public void clearShips()
+	{
+		this.ships.clear();
+		this.remainingShips = 0;
+	}
+
 
 	public List<Result> getAttacks() {
 		return this.attacks;
@@ -203,8 +209,21 @@ public class Board {
 		return true;
 	}
 
-	private boolean isSquareConflict(Square sq1, Square sq2) {
-		if(sq1.getRow()==sq2.getRow() && sq1.getColumn()==sq2.getColumn()) return true;
-		else return false;
+	public static boolean isSquareConflict(Square sq1, Square sq2) {
+		return (sq1.getRow()==sq2.getRow() && sq1.getColumn()==sq2.getColumn());
+	}
+
+	public static char randCol() {
+		//return 'A' to 'J'
+		return (char)(Math.random()*10+65);
+	}
+
+	public static int randRow() {
+		//return 1-10
+		return (int)(Math.random()*10+1);
+	}
+
+	public static boolean randVertical() {
+		return (Math.random() >=.5);
 	}
 }
