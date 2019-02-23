@@ -1,6 +1,5 @@
 package cs361.battleships.models;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
@@ -11,32 +10,34 @@ public class Ship {
 	@JsonProperty private List<Square> occupiedSquares;
 	@JsonProperty private String kind;
 	@JsonProperty private int size;
-	@JsonProperty private boolean Sunk;
 	@JsonProperty private Square captainsQuarters;
 	@JsonProperty private int health; // HP of captain's quarter
+	@JsonProperty private boolean sunk;
 
 	public Ship() {
 		this.occupiedSquares = new ArrayList<>();
 		this.kind = new String();
-		this.Sunk = false;
 		this.size=0;
-		this.captainsQuarters = new CaptainsQuarter();
+		this.captainsQuarters = new Square();
+		this.health=1;
+		this.sunk=false;
 	}
 
 	public Ship(String kind) {
 		this.kind = kind;
+		this.sunk=false;
 		this.size=0;
 		if(kind.equals("MINESWEEPER")){
-			this.Sunk = false;
 			this.size=2;
+			this.health=1;
 		}
 		else if(kind.equals("DESTROYER")){
-			this.Sunk = false;
 			this.size=3;
+			this.health=2;
 		}
 		else if(kind.equals("BATTLESHIP")){
-			this.Sunk = false;
 			this.size=4;
+			this.health=2;
 		}
 		this.occupiedSquares = new ArrayList<>();
 	}
@@ -62,19 +63,14 @@ public class Ship {
 
 	public void createCaptainsQuarters(){
 		if(kind.equals("MINESWEEPER")) {
-			captainsQuarters = occupiedSquares.get(0);
-			captainsQuarters = occupiedSquares.get(0);
-			health = 1;
-		}
-		else if(kind.equals("DESTROYER")) {
-			captainsQuarters = occupiedSquares.get(1);
-			captainsQuarters = occupiedSquares.get(1);
-			health = 2;
-		}
-		else if(kind.equals("BATTLESHIP")) {
-			captainsQuarters = occupiedSquares.get(2);
-			captainsQuarters = occupiedSquares.get(2);
-			health = 2;
+			this.captainsQuarters = occupiedSquares.get(0);
+			this.captainsQuarters = occupiedSquares.get(0);
+		} else if(kind.equals("DESTROYER")) {
+			this.captainsQuarters = occupiedSquares.get(1);
+			this.captainsQuarters = occupiedSquares.get(1);
+		} else if(kind.equals("BATTLESHIP")) {
+			this.captainsQuarters = occupiedSquares.get(2);
+			this.captainsQuarters = occupiedSquares.get(2);
 		}
 	}
 
@@ -83,41 +79,13 @@ public class Ship {
 	}
 
 	public void deductHealth() {
-		health--;
+		this.health--;
+		if(this.health==0) this.sunk=true;
 	}
 
-	public boolean isSunk(List<Result> attacksOnBoard) {
-		//counts the number of hits on a ship. If the hit count
-		//is the same as the number of squares on the ship, we know the
-		//ship has been sunk, otherwise it has not.
-
-		/*
-		int hits = 0;
-
-		for(Square shipLocationSquare : this.getOccupiedSquares()) {
-			//for every ship
-			//loop through every attack on the board
-			for(Result attack : attacksOnBoard) {
-				if((shipLocationSquare.getColumn() == attack.getLocation().getColumn()) &&
-						(shipLocationSquare.getRow() == attack.getLocation().getRow())) {
-					hits = hits + 1;
-				}
-			}
-		}
-
-		if(hits == this.getSize()) {
-			this.Sunk = true;
-			return true;
-		} else {
-			return false;
-		}
-		*/
-
-		if (health == 0) {
-			Sunk = true;
-			return true;
-		}
-
-		return false;
+	public boolean isSunk() {
+		if (this.health == 0) { this.sunk=true; }
+		else { this.sunk=false; }
+		return this.sunk;
 	}
 }

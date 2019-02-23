@@ -32,8 +32,7 @@ public class Board {
 			this.ships.add(ship);
 			remainingShips++;
 			return true;
-		}
-		return false;
+		} else return false;
 	}
 
 	/*
@@ -51,7 +50,7 @@ public class Board {
 		res.setLocation(sq1);
 		//If ship is present on coordinates
 
-		if(isDuplicateAttack(sq1) && !isCaptainsQuarter(x,y) ) {
+		if(isDuplicateAttack(sq1) && !isCaptainsQuarter(x,y) || (isCaptainsQuarter(x,y) && !(this.getShip(x,y) == null) && this.getShip(x,y).isSunk()) ) {
 			res.setResult(AttackStatus.INVALID);
 			return res;
 		}
@@ -61,18 +60,15 @@ public class Board {
 
 			if (!isCaptainsQuarter(x,y) ) {
 				res.setResult(AttackStatus.HIT);
-			}
-			else
-				res.setResult(AttackStatus.MISS);
-
-			if ((res.getShip()).isSunk(this.getAttacks())) {
+			} else if (isCaptainsQuarter(x,y) && res.getShip().isSunk()) {
 				res.setResult(AttackStatus.SUNK);
 				remainingShips--;
 				if (!this.shipsLeft()) {
 					res.setResult(AttackStatus.SURRENDER);
 				}
-			}
+			} else res.setResult(AttackStatus.MISS);
 		}
+
 		//If input is out of bounds or incorrect. Needs to include duplicate attack as well.
 		else if((x>10 || x<0) || (y > 'J' || y < 'A')){
 			res.setResult(AttackStatus.INVALID);
