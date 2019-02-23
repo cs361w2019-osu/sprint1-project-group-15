@@ -26,25 +26,25 @@ function makeGrid(table, isPlayer, gridSize) {
 function shipTracking(){
     var oppShipCount = 0;
     game.opponentsBoard.ships.forEach((ship) => {
-        if(ship.kind === "MINESWEEPER" && ship.Sunk === true){
+        if(ship.kind === "MINESWEEPER" && ship.sunk === true){
             document.getElementById("mine").classList.add("striked");
             oppShipCount++;
         }
-        if(ship.kind === "BATTLESHIP" && ship.Sunk === true){
+        if(ship.kind === "BATTLESHIP" && ship.sunk === true){
             document.getElementById("batt").classList.add("striked");
             oppShipCount++;
         }
-        if(ship.kind === "DESTROYER" && ship.Sunk === true){
+        if(ship.kind === "DESTROYER" && ship.sunk === true){
             document.getElementById("dest").classList.add("striked");
             oppShipCount++;
         }
     });
     game.playersBoard.ships.forEach((ship) => {
-        if(ship.kind === "MINESWEEPER" && ship.Sunk === true)
+        if(ship.kind === "MINESWEEPER" && ship.sunk === true)
             document.getElementById("mine2").classList.add("striked");
-        if(ship.kind === "BATTLESHIP" && ship.Sunk === true)
+        if(ship.kind === "BATTLESHIP" && ship.sunk === true)
             document.getElementById("batt2").classList.add("striked");
-        if(ship.kind === "DESTROYER" && ship.Sunk === true)
+        if(ship.kind === "DESTROYER" && ship.sunk === true)
             document.getElementById("dest2").classList.add("striked");
     });
     shipsSunk=oppShipCount;
@@ -177,7 +177,6 @@ function cellClick() {
         sonarPulse--;
         if(sonarPulse==0) sonarAvailable=false;
         redrawGrid();
-        alert("Sonar Time ("+row+", "+col+")");
 
         drawSonar(row-1, this.cellIndex);
         document.getElementById("player_prompt").textContent="Select Your Next Attack";
@@ -326,6 +325,7 @@ function show_modal() {
     document.getElementById("error-modal").classList.remove("hidden");
 }
 
+//calculates size for the grids, based on the smallest of the viewport dimensions (client width and height)
 function newBig() {
     return Math.floor(Math.min(document.documentElement.clientWidth, document.documentElement.clientHeight) * .85 / 10);
 }
@@ -334,6 +334,7 @@ function newSmall() {
     return Math.floor(Math.min(document.documentElement.clientWidth, document.documentElement.clientHeight) * .40 / 10);
 }
 
+//this does the automatically started ship placement
 function doShipPlacement() {
     var prompt = document.getElementById("player_prompt");
     var rotateKey = document.createElement("kbd");
@@ -360,6 +361,7 @@ function initGame() {
     makeGrid(document.getElementById("opponent"), false, newSmall());
     makeGrid(document.getElementById("player"), true, newBig());
 
+    //listener to resize the grids when the window changes sizes
     window.addEventListener("resize", function(e) {
             redrawGrid();
     });
@@ -373,6 +375,7 @@ function initGame() {
           else if (shipType=="DESTROYER" && isSetup) registerCellListener(place(3));
           else if (shipType=="BATTLESHIP" && isSetup) registerCellListener(place(4));
         }
+    //keypress 's' or 'S' to activate sonar pulse, if available
         else if (e.which == 83 || e.which == 115){
           if(sonarAvailable && shipsSunk > 0 && sonarPulse > 0 && !gameIsOver){
             redrawGrid();
@@ -382,18 +385,7 @@ function initGame() {
           }
         }
       });
-    document.getElementById("place_minesweeper").addEventListener("click", function(e) {
-        shipType = "MINESWEEPER";
-       registerCellListener(place(2));
-    });
-    document.getElementById("place_destroyer").addEventListener("click", function(e) {
-        shipType = "DESTROYER";
-       registerCellListener(place(3));
-    });
-    document.getElementById("place_battleship").addEventListener("click", function(e) {
-       shipType = "BATTLESHIP";
-       registerCellListener(place(4));
-    });
+
     sendXhr("GET", "/game", {}, function(data) {
         game = data;
     });
@@ -413,9 +405,11 @@ function initGame() {
         }
     });
 
+    //event to start new game (reload the page)
     document.getElementById("new_game").addEventListener("click", function() {
         if(confirm("Do you want to start a new game?")) location.reload();
     });
 
+    //begins auto ship placement
     doShipPlacement();
 };

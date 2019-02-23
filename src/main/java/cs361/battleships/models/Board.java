@@ -49,7 +49,7 @@ public class Board {
 		res.setLocation(sq1);
 		//If ship is present on coordinates
 
-		if(isDuplicateAttack(sq1) && !isCaptainsQuarter(x,y) ) {
+		if(isDuplicateAttack(sq1) && !isCaptainsQuarter(x,y) || (isCaptainsQuarter(x,y) && !(this.getShip(x,y) == null) && this.getShip(x,y).isSunk()) ) {
 			res.setResult(AttackStatus.INVALID);
 			return res;
 		}
@@ -63,7 +63,7 @@ public class Board {
 			else
 				res.setResult(AttackStatus.MISS);
 
-			if ((res.getShip()).isSunk(this.getAttacks())) {
+			if ((res.getShip()).isSunk()) {
 				res.setResult(AttackStatus.SUNK);
 				if (!this.shipsLeft()) {
 					res.setResult(AttackStatus.SURRENDER);
@@ -100,7 +100,7 @@ public class Board {
 	//Needs isSunk for implementation
 	private boolean shipsLeft(){
 		for(Ship ships : this.getShips()){
-			if(!ships.isSunk(this.getAttacks()))
+			if(!ships.isSunk())
 				return true;
 		}
 		return false;
@@ -127,7 +127,6 @@ public class Board {
 	}
 
 	public void setAttacks(List<Result> attacks) {
-		//TODO implement
 		this.attacks = attacks;
 	}
 
