@@ -18,7 +18,7 @@ public class Ship {
 		this.occupiedSquares = new ArrayList<>();
 		this.kind = new String();
 		this.size=0;
-		this.captainsQuarters = new CaptainsQuarter();
+		this.captainsQuarters = new Square();
 		this.health=1;
 		this.sunk=false;
 	}
