@@ -127,6 +127,7 @@ public class BoardTest {
         board.placeShip(new Ship("BATTLESHIP"), 4, 'D', true);
         board.placeShip(new Ship("MINESWEEPER"), 1, 'B', true);
         board.placeShip(new Ship("DESTROYER"),3,'F',false);
+        board.placeShip(new Submarine(), 8,'A', false);
 
         for(Ship ships : board.getShips()){
             if((ships.getKind() == "BATTLESHIP") &&(ships.getCaptainsQuarters().getRow() == 6) && ships.getCaptainsQuarters().getColumn() == 'D')
@@ -135,6 +136,8 @@ public class BoardTest {
                 System.out.println("Captain's Quarters on Minesweeper Found");
             if(ships.getKind() == "DESTROYER" && ships.getCaptainsQuarters().getRow() == 3 && ships.getCaptainsQuarters().getColumn() == 'G')
                 System.out.println("Captain's Quarters on Destroyer Found");
+            if(ships.getKind() == "SUBMARINE" && ships.getCaptainsQuarters().getRow() == 8 && ships.getCaptainsQuarters().getColumn() == 'D')
+                System.out.println("Captain's Quarters on Submarine Found");
         }
     }
 
@@ -163,6 +166,26 @@ public class BoardTest {
 
         res = board.attack(1,'B');
         System.out.println(res.getResult() );
+    }
+
+    @Test
+    public void testSubmarinePlacement(){
+        Board board = new Board();
+        board.placeShip(new Submarine(), 8,'A', false);
+        for(Ship ships : board.getShips()) {
+            if (ships.getOccupiedSquares().get(4).getRow() == 7 && ships.getOccupiedSquares().get(4).getColumn() == 'C')
+                System.out.println("Submarine Placement Good");
+        }
+    }
+
+    @Test
+    public void testVerticalSubmarinePlacement(){
+        Board board = new Board();
+        board.placeShip(new Submarine(), 1,'A', true);
+        for(Ship ships : board.getShips()) {
+            if (ships.getOccupiedSquares().get(4).getRow() == 3 && ships.getOccupiedSquares().get(4).getColumn() == 'B')
+                System.out.println("Submarine Vertical Placement Good");
+        }
     }
 }
 
