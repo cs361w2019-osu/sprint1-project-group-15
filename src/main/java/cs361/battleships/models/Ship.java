@@ -64,12 +64,9 @@ public class Ship {
 	public void createCaptainsQuarters(){
 		if(kind.equals("MINESWEEPER")) {
 			this.captainsQuarters = occupiedSquares.get(0);
-			this.captainsQuarters = occupiedSquares.get(0);
 		} else if(kind.equals("DESTROYER")) {
 			this.captainsQuarters = occupiedSquares.get(1);
-			this.captainsQuarters = occupiedSquares.get(1);
 		} else if(kind.equals("BATTLESHIP")) {
-			this.captainsQuarters = occupiedSquares.get(2);
 			this.captainsQuarters = occupiedSquares.get(2);
 		}
 	}
