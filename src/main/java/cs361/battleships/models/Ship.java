@@ -7,12 +7,12 @@ import java.util.List;
 
 public class Ship {
 
-	@JsonProperty private List<Square> occupiedSquares;
-	@JsonProperty private String kind;
-	@JsonProperty private int size;
-	@JsonProperty private Square captainsQuarters;
-	@JsonProperty private int health; // HP of captain's quarter
-	@JsonProperty private boolean sunk;
+	@JsonProperty protected List<Square> occupiedSquares;
+	@JsonProperty protected String kind;
+	@JsonProperty protected int size;
+	@JsonProperty protected Square captainsQuarters;
+	@JsonProperty protected int health; // HP of captain's quarter
+	@JsonProperty protected boolean sunk;
 
 	public Ship() {
 		this.occupiedSquares = new ArrayList<>();

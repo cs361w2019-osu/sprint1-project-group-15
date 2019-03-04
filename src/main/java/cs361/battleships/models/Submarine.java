@@ -8,8 +8,8 @@ import java.util.List;
 public class Submarine extends Ship{
 
     public Submarine(){
-        setHealth(2);
-        setSize(5);
-        setKind("SUBMARINE");
+    	this.health = 2;
+    	this.size = 5;
+    	this.kind = "SUBMARINE";
     }
 }
