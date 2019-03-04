@@ -42,6 +42,10 @@ public class Ship {
 		this.occupiedSquares = new ArrayList<>();
 	}
 
+	public void setHealth(int health) { this.health = health; }
+	public void setSize(int size) { this.size = size; }
+	public void setKind(String kind) { this.kind = kind; }
+
 	public List<Square> getOccupiedSquares() {
 		return this.occupiedSquares;
 	}
