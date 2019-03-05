@@ -7,12 +7,12 @@ import java.util.List;
 
 public class Ship {
 
-	@JsonProperty private List<Square> occupiedSquares;
-	@JsonProperty private String kind;
-	@JsonProperty private int size;
-	@JsonProperty private Square captainsQuarters;
-	@JsonProperty private int health; // HP of captain's quarter
-	@JsonProperty private boolean sunk;
+	@JsonProperty protected List<Square> occupiedSquares;
+	@JsonProperty protected String kind;
+	@JsonProperty protected int size;
+	@JsonProperty protected Square captainsQuarters;
+	@JsonProperty protected int health; // HP of captain's quarter
+	@JsonProperty protected boolean sunk;
 
 	public Ship() {
 		this.occupiedSquares = new ArrayList<>();
@@ -42,6 +42,10 @@ public class Ship {
 		this.occupiedSquares = new ArrayList<>();
 	}
 
+	public void setHealth(int health) { this.health = health; }
+	public void setSize(int size) { this.size = size; }
+	public void setKind(String kind) { this.kind = kind; }
+
 	public List<Square> getOccupiedSquares() {
 		return this.occupiedSquares;
 	}
@@ -64,12 +68,9 @@ public class Ship {
 	public void createCaptainsQuarters(){
 		if(kind.equals("MINESWEEPER")) {
 			this.captainsQuarters = occupiedSquares.get(0);
-			this.captainsQuarters = occupiedSquares.get(0);
 		} else if(kind.equals("DESTROYER")) {
 			this.captainsQuarters = occupiedSquares.get(1);
-			this.captainsQuarters = occupiedSquares.get(1);
 		} else if(kind.equals("BATTLESHIP")) {
-			this.captainsQuarters = occupiedSquares.get(2);
 			this.captainsQuarters = occupiedSquares.get(2);
 		}
 	}
