@@ -157,11 +157,18 @@ function canMoveCheck()
         playerCanMove = true;
         shipMovesRemaining = 2;
     }
+    else if(!gameIsOver && playerCanMove && shipMovesRemaining === 0)
+    {
+        document.getElementbyId("movement_buttons").classList.add("hidden");
+    }
 }
 
 function cellClick() {
     let row = this.parentNode.rowIndex + 1;
     let col = String.fromCharCode(this.cellIndex + 65);
+
+    canMoveCheck();
+
     if (isSetup && !gameIsOver) {
         sendXhr("POST", "/place", {game: game, shipType: shipType, x: row, y: col, isVertical: vertical}, function(data) {
             game = data;
@@ -182,7 +189,6 @@ function cellClick() {
         sendXhr("POST", "/attack", {game: game, x: row, y: col}, function(data) {
             game = data;
             redrawGrid();
-            canMoveCheck();
         });
     } else if (!gameIsOver && actionIsSonar) {
         actionIsSonar=false;
@@ -386,6 +392,7 @@ function move_ships(direction)
     {
         sendXhr("POST", "/move", {game: game, direction: direction}, function(data) {
                 game = data;
+                shipMovesRemaining--;
         });
     }
 }
