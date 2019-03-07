@@ -8,6 +8,8 @@ var shipsSunk = 0;
 var sonarPulse = 2;
 var sonarAvailable = false;
 var actionIsSonar = false;
+var playerCanMove = false;
+var shipMovesRemaining = 0;
 
 function makeGrid(table, isPlayer, gridSize) {
     for (i=0; i<10; i++) {
@@ -147,6 +149,16 @@ function registerOppCellListener(f) {
     oldOppListener = f;
 }
 
+function canMoveCheck()
+{
+    if(!gameIsOver && shipsSunk >= 2)
+    {
+        document.getElementById("movement_buttons").classList.remove("hidden");
+        playerCanMove = true;
+        shipMovesRemaining = 2;
+    }
+}
+
 function cellClick() {
     let row = this.parentNode.rowIndex + 1;
     let col = String.fromCharCode(this.cellIndex + 65);
@@ -170,7 +182,7 @@ function cellClick() {
         sendXhr("POST", "/attack", {game: game, x: row, y: col}, function(data) {
             game = data;
             redrawGrid();
-
+            canMoveCheck();
         });
     } else if (!gameIsOver && actionIsSonar) {
         actionIsSonar=false;
@@ -180,9 +192,9 @@ function cellClick() {
 
         drawSonar(row-1, this.cellIndex);
         document.getElementById("player_prompt").textContent="Select Your Next Attack";
-
         sonarPulseUpdate();
     }
+
 }
 
 function drawSonar (row, col) {
@@ -368,6 +380,16 @@ function doShipPlacement() {
     }
 }
 
+function move_ships(direction)
+{
+    if(!gameIsOver && playerCanMove && shipMovesRemaining > 0)
+    {
+        sendXhr("POST", "/move", {game: game, direction: direction}, function(data) {
+                game = data;
+        });
+    }
+}
+
 function initGame() {
     makeGrid(document.getElementById("opponent"), false, newSmall());
     makeGrid(document.getElementById("player"), true, newBig());
@@ -404,6 +426,12 @@ function initGame() {
     //event handlers for the modal
     document.getElementById("modal-close").addEventListener("click", close_modal);
     document.getElementById("modal-ok-button").addEventListener("click", close_modal);
+
+    //event handlers for movement buttons
+    document.getElementById("move_north").addEventListener("click", function(){move_ships("north") ;});
+    document.getElementById("move_west").addEventListener("click",  function(){move_ships("west")  ;});
+    document.getElementById("move_south").addEventListener("click", function(){move_ships("south") ;});
+    document.getElementById("move_east").addEventListener("click",  function(){move_ships("east")  ;});
 
     // event handler for the surrender button
     document.getElementById("surrender").addEventListener("click", function() {
