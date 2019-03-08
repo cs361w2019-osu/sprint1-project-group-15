@@ -8,6 +8,7 @@ var shipsSunk = 0;
 var sonarPulse = 2;
 var sonarAvailable = false;
 var actionIsSonar = false;
+var isSubmerged = false;
 
 function makeGrid(table, isPlayer, gridSize) {
     for (i=0; i<10; i++) {
@@ -277,7 +278,12 @@ function place(size) {
                 // ship is over the edge; let the back end deal with it
                 break;
             }
-            cell.classList.toggle("placed");
+            if (isSubmerged) {
+                cell.classList.remove("placed");
+                cell.classList.toggle("submerged")
+            }
+            else
+                cell.classList.toggle("placed");
         }
     }
 }
@@ -372,10 +378,26 @@ function doShipPlacement() {
         prompt.textContent = "Place your "+shipType+". Rotate: ";
         prompt.appendChild(rotateKey);
     } else if (placedShips==3){
-        shipType = "SUBMARINE";
+        shipType = "submarine";
         registerCellListener(place(4));
-        prompt.textContent = "Place your "+shipType+". Rotate: ";
-        prompt.appendChild(rotateKey);
+        document.addEventListener('keypress', function(e) {
+            if (e.which == 85 || e.which == 117) {
+                isSubmerged = !isSubmerged;
+                redrawGrid();
+
+                // "SUBMARINE" indicates a submersed sub; "submarine" means a surfaced sub
+                if (isSubmerged) {
+                    shipType = "SUBMARINE";
+                } else {
+                    shipType = "submarine";
+                }
+
+                registerCellListener(place(4));
+            }
+
+        });
+            prompt.textContent = "Place your "+shipType+". Rotate: ";
+            prompt.appendChild(rotateKey);
     }
 }
 
@@ -398,7 +420,8 @@ function initGame() {
           else if (shipType=="BATTLESHIP" && isSetup) registerCellListener(place(4));
           else if (shipType=="SUBMARINE" && isSetup) registerCellListener(place(4));
         }
-    //keypress 's' or 'S' to activate sonar pulse, if available
+
+        //keypress 's' or 'S' to activate sonar pulse, if available
         else if (e.which == 83 || e.which == 115){
           if(sonarAvailable && shipsSunk > 0 && sonarPulse > 0 && !gameIsOver){
             redrawGrid();
@@ -407,7 +430,7 @@ function initGame() {
             actionIsSonar=true;
           }
         }
-      });
+    });
 
     sendXhr("GET", "/game", {}, function(data) {
         game = data;

@@ -23,9 +23,11 @@ public class ApplicationController {
     public Result placeShip(Context context, PlacementGameAction g) {
         Game game = g.getGame();
         Ship ship;
-        if(g.getShipType().equals("SUBMARINE")) {
-            ship = new Submarine();
+        // submerged flag is determined by case -- see doShipPlacement() in game.js
+        if(g.getShipType().equals("SUBMARINE") || g.getShipType().equals("submarine")) {
+            ship = new Submarine(g.getShipType());
         }
+
         else{
             ship = new Ship(g.getShipType());
         }
