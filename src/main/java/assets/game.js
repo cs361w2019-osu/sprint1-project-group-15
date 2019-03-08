@@ -8,6 +8,7 @@ var shipsSunk = 0;
 var sonarPulse = 2;
 var sonarAvailable = false;
 var actionIsSonar = false;
+var isSubmerged = false;
 
 function makeGrid(table, isPlayer, gridSize) {
     for (i=0; i<10; i++) {
@@ -38,6 +39,10 @@ function shipTracking(){
             document.getElementById("dest").classList.add("striked");
             oppShipCount++;
         }
+        if(ship.kind === "SUBMARINE" && ship.sunk === true){
+            document.getElementById("sub").classList.add("striked");
+            oppShipCount++;
+        }
     });
     game.playersBoard.ships.forEach((ship) => {
         if(ship.kind === "MINESWEEPER" && ship.sunk === true)
@@ -46,6 +51,8 @@ function shipTracking(){
             document.getElementById("batt2").classList.add("striked");
         if(ship.kind === "DESTROYER" && ship.sunk === true)
             document.getElementById("dest2").classList.add("striked");
+        if(ship.kind === "SUBMARINE" && ship.sunk === true)
+            document.getElementById("sub2").classList.add("striked");
     });
     shipsSunk=oppShipCount;
 }
@@ -76,7 +83,7 @@ function redrawGrid() {
     Array.from(document.getElementById("player").childNodes).forEach((row) => row.remove());
 
 
-    if(placedShips==3) {
+    if(placedShips==4) {
         makeGrid(document.getElementById("opponent"), false, newBig());
         makeGrid(document.getElementById("player"), true, newSmall());
     } else {
@@ -154,7 +161,7 @@ function cellClick() {
         sendXhr("POST", "/place", {game: game, shipType: shipType, x: row, y: col, isVertical: vertical}, function(data) {
             game = data;
             placedShips++;
-            if (placedShips == 3) {
+            if (placedShips == 4) {
                 document.getElementById("player_prompt").textContent="Select Your Next Attack";
                 document.getElementById("play_board").classList.toggle("small");
                 document.getElementById("opp_board").classList.toggle("small");
@@ -271,7 +278,12 @@ function place(size) {
                 // ship is over the edge; let the back end deal with it
                 break;
             }
-            cell.classList.toggle("placed");
+            if (isSubmerged) {
+                cell.classList.remove("placed");
+                cell.classList.toggle("submerged")
+            }
+            else
+                cell.classList.toggle("placed");
         }
     }
 }
@@ -365,6 +377,27 @@ function doShipPlacement() {
         registerCellListener(place(4));
         prompt.textContent = "Place your "+shipType+". Rotate: ";
         prompt.appendChild(rotateKey);
+    } else if (placedShips==3){
+        shipType = "submarine";
+        registerCellListener(place(4));
+        document.addEventListener('keypress', function(e) {
+            if (e.which == 85 || e.which == 117) {
+                isSubmerged = !isSubmerged;
+                redrawGrid();
+
+                // "SUBMARINE" indicates a submersed sub; "submarine" means a surfaced sub
+                if (isSubmerged) {
+                    shipType = "SUBMARINE";
+                } else {
+                    shipType = "submarine";
+                }
+
+                registerCellListener(place(4));
+            }
+
+        });
+            prompt.textContent = "Place your "+shipType+". Rotate: ";
+            prompt.appendChild(rotateKey);
     }
 }
 
@@ -385,8 +418,10 @@ function initGame() {
           if (shipType=="MINESWEEPER" && isSetup) registerCellListener(place(2));
           else if (shipType=="DESTROYER" && isSetup) registerCellListener(place(3));
           else if (shipType=="BATTLESHIP" && isSetup) registerCellListener(place(4));
+          else if (shipType=="SUBMARINE" && isSetup) registerCellListener(place(4));
         }
-    //keypress 's' or 'S' to activate sonar pulse, if available
+
+        //keypress 's' or 'S' to activate sonar pulse, if available
         else if (e.which == 83 || e.which == 115){
           if(sonarAvailable && shipsSunk > 0 && sonarPulse > 0 && !gameIsOver){
             redrawGrid();
@@ -395,7 +430,7 @@ function initGame() {
             actionIsSonar=true;
           }
         }
-      });
+    });
 
     sendXhr("GET", "/game", {}, function(data) {
         game = data;

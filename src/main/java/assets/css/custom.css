@@ -92,6 +92,12 @@ td:hover {
 	background-color: black;
 }
 
+.submerged {
+    background-color: transparent !important;
+    outline: 3px solid green !important;
+}
+
+
 .hit {
 	background-color: orange;
 }
@@ -233,5 +239,13 @@ td:hover {
 }
 
 #mine2{
+    background-color: green;
+}
+
+#sub {
+    border: 1px solid black;
+}
+
+#sub2{
     background-color: green;
 }

@@ -13,9 +13,20 @@ public class Game {
 	DO NOT change the signature of this method. It is used by the grading scripts.
 	 */
     public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
-        boolean successful = playersBoard.placeShip(new Ship(ship.getKind()), x, y, isVertical);
+        boolean successful;
+        String shipKind = ship.getKind();
+        if(shipKind.equals("SUBMARINE") || shipKind.equals("submarine")) {
+            successful = playersBoard.placeShip(new Submarine(shipKind), x, y, isVertical);
+        }
+        else
+            successful = playersBoard.placeShip(new Ship(shipKind), x, y, isVertical);
         if (!successful) return false;
-        Ship oppShip = new Ship(ship.getKind());
+
+        Ship oppShip;
+        if(shipKind.equals("SUBMARINE"))
+            oppShip = new Submarine(shipKind);
+        else
+            oppShip = new Ship(shipKind);
         while (! (opponentsBoard.placeShip(oppShip, Board.randRow(), Board.randCol(), Board.randVertical())));
         return true;
     }
