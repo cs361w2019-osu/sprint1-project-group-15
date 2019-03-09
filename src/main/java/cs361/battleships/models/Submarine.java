@@ -7,10 +7,10 @@ import java.util.List;
 
 public class Submarine extends Ship {
 
-	public Submarine(String kind) {
+	public Submarine() {
 		this.health = 2;
 		this.size = 5;
-		this.kind = kind;
+		this.kind = "SUBMARINE";
 	}
 
 	public void populateSquares(int x, char y, boolean vert) {

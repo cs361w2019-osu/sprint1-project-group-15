@@ -27,7 +27,7 @@ public class Board {
 		if(this.getShips().size()>0) {
 			if (!validShipType(ship)) return false;
 		}
-		if (validLocation(shipSize, x, y, isVertical) || ship.getKind() == "SUBMARINE") {
+		if (validLocation(shipSize, x, y, isVertical)) {
 			ship.populateSquares(x,y,isVertical);
 			this.ships.add(ship);
 			remainingShips++;
