@@ -10,6 +10,7 @@ var sonarAvailable = false;
 var actionIsSonar = false;
 var playerCanMove = false;
 var shipMovesRemaining = 0;
+var isSubmerged = false;
 
 function makeGrid(table, isPlayer, gridSize) {
     for (i=0; i<10; i++) {
@@ -40,6 +41,10 @@ function shipTracking(){
             document.getElementById("dest").classList.add("striked");
             oppShipCount++;
         }
+        if(ship.kind === "SUBMARINE" && ship.sunk === true){
+            document.getElementById("sub").classList.add("striked");
+            oppShipCount++;
+        }
     });
     game.playersBoard.ships.forEach((ship) => {
         if(ship.kind === "MINESWEEPER" && ship.sunk === true)
@@ -48,6 +53,8 @@ function shipTracking(){
             document.getElementById("batt2").classList.add("striked");
         if(ship.kind === "DESTROYER" && ship.sunk === true)
             document.getElementById("dest2").classList.add("striked");
+        if(ship.kind === "SUBMARINE" && ship.sunk === true)
+            document.getElementById("sub2").classList.add("striked");
     });
     shipsSunk=oppShipCount;
 }
@@ -77,8 +84,9 @@ function redrawGrid() {
     Array.from(document.getElementById("opponent").childNodes).forEach((row) => row.remove());
     Array.from(document.getElementById("player").childNodes).forEach((row) => row.remove());
 
+    document.getElementById("player_prompt").style.width=(newSmall()*10+40)+"px";
 
-    if(placedShips==3) {
+    if(placedShips==4) {
         makeGrid(document.getElementById("opponent"), false, newBig());
         makeGrid(document.getElementById("player"), true, newSmall());
     } else {
@@ -173,7 +181,7 @@ function cellClick() {
         sendXhr("POST", "/place", {game: game, shipType: shipType, x: row, y: col, isVertical: vertical}, function(data) {
             game = data;
             placedShips++;
-            if (placedShips == 3) {
+            if (placedShips == 4) {
                 document.getElementById("player_prompt").textContent="Select Your Next Attack";
                 document.getElementById("play_board").classList.toggle("small");
                 document.getElementById("opp_board").classList.toggle("small");
@@ -273,23 +281,45 @@ function place(size) {
         let col = this.cellIndex;
         vertical = document.getElementById("is_vertical").checked;
         let table = document.getElementById("player");
+        //Using a flag for submarine highlighting.
+        if(shipType == "submarine" || shipType == "SUBMARINE") addNub = true;
+        else addNub = false;
+        rowOffset=0, colOffset=0;
         for (let i=0; i<size; i++) {
             let cell;
             if(vertical) {
+                //if this is the third square (i=2) and the flag is set, we'll shift the col +1, highlight that cell instead
+                if(addNub && i == 2) colOffset = 1;
                 let tableRow = table.rows[row+i];
                 if (tableRow === undefined) {
                     // ship is over the edge; let the back end deal with it
                     break;
                 }
-                cell = tableRow.cells[col];
+                //prevents breaking when the nub is out of bounds
+                try{ cell = tableRow.cells[col+colOffset]; } catch(error) {}
+                //with the nub highlighted, we zero the offset, remove the flag and backtrack the loop with i--
+                if(colOffset>0){
+                    colOffset = 0;
+                    addNub = false;
+                    i--;
+                }
             } else {
-                cell = table.rows[row].cells[col+i];
+                //same as above, but for a horizontal ship
+                if(addNub && i == 2) rowOffset = 1;
+                //prevents breaking when the nub is out of bounds
+                try{ cell = table.rows[row-rowOffset].cells[col+i]; } catch (error) {}
+                //this zeros the offset and repeats this loop, now without the flag set
+                if(rowOffset>0) {
+                    rowOffset=0;
+                    addNub = false;
+                    i--;
+                }
             }
-            if (cell === undefined) {
-                // ship is over the edge; let the back end deal with it
-                break;
-            }
-            cell.classList.toggle("placed");
+            if(cell === undefined) {}
+            else if (isSubmerged) {
+                cell.classList.toggle("placed");
+                cell.classList.toggle("submerged")
+            } else cell.classList.toggle("placed");
         }
     }
 }
@@ -368,21 +398,47 @@ function doShipPlacement() {
     var prompt = document.getElementById("player_prompt");
     var rotateKey = document.createElement("kbd");
     rotateKey.textContent = "r";
+    var submergeKey = document.createElement("kbd");
+    submergeKey.textContent = "u";
     if (placedShips==0){
         shipType = "MINESWEEPER";
         registerCellListener(place(2));
-        prompt.textContent = "Place your "+shipType+". Rotate: ";
+        prompt.textContent = "Place your "+shipType+". \nRotate: ";
         prompt.appendChild(rotateKey);
     } else if (placedShips==1){
         shipType = "DESTROYER";
         registerCellListener(place(3));
-        prompt.textContent = "Place your "+shipType+". Rotate: ";
+        prompt.textContent = "Place your "+shipType+". \nRotate: ";
         prompt.appendChild(rotateKey);
     } else if (placedShips==2){
         shipType = "BATTLESHIP";
         registerCellListener(place(4));
-        prompt.textContent = "Place your "+shipType+". Rotate: ";
+        prompt.textContent = "Place your "+shipType+". \nRotate: ";
         prompt.appendChild(rotateKey);
+    } else if (placedShips==3){
+        shipType = "submarine";
+        registerCellListener(place(4));
+        document.addEventListener('keypress', function(e) {
+            if (e.which == 85 || e.which == 117) {
+                isSubmerged = !isSubmerged;
+                redrawGrid();
+
+                // "SUBMARINE" indicates a submersed sub; "submarine" means a surfaced sub
+                if (isSubmerged) {
+                    shipType = "SUBMARINE";
+                } else {
+                    shipType = "submarine";
+                }
+
+                registerCellListener(place(4));
+            }
+
+        });
+            prompt.textContent="Place your "+shipType.toUpperCase()+". \nRotate: ";
+            prompt.appendChild(rotateKey);
+            var submergeText = document.createTextNode("\nSubmerge: ");
+            prompt.appendChild(submergeText);
+            prompt.appendChild(submergeKey);
     }
 }
 
@@ -414,8 +470,11 @@ function initGame() {
           if (shipType=="MINESWEEPER" && isSetup) registerCellListener(place(2));
           else if (shipType=="DESTROYER" && isSetup) registerCellListener(place(3));
           else if (shipType=="BATTLESHIP" && isSetup) registerCellListener(place(4));
+          else if ((shipType=="SUBMARINE" || shipType=="submarine") && isSetup) registerCellListener(place(4));
+
         }
-    //keypress 's' or 'S' to activate sonar pulse, if available
+
+        //keypress 's' or 'S' to activate sonar pulse, if available
         else if (e.which == 83 || e.which == 115){
           if(sonarAvailable && shipsSunk > 0 && sonarPulse > 0 && !gameIsOver){
             redrawGrid();
@@ -424,7 +483,7 @@ function initGame() {
             actionIsSonar=true;
           }
         }
-      });
+    });
 
     sendXhr("GET", "/game", {}, function(data) {
         game = data;

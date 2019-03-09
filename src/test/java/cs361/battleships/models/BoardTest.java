@@ -127,7 +127,7 @@ public class BoardTest {
         board.placeShip(new Ship("BATTLESHIP"), 4, 'D', true);
         board.placeShip(new Ship("MINESWEEPER"), 1, 'B', true);
         board.placeShip(new Ship("DESTROYER"),3,'F',false);
-        board.placeShip(new Submarine(), 8,'A', false);
+        board.placeShip(new Submarine("SUBMARINE"), 8,'A', false);
 
         for(Ship ships : board.getShips()){
             if((ships.getKind() == "BATTLESHIP") &&(ships.getCaptainsQuarters().getRow() == 6) && ships.getCaptainsQuarters().getColumn() == 'D')
@@ -171,7 +171,7 @@ public class BoardTest {
     @Test
     public void testSubmarinePlacement(){
         Board board = new Board();
-        board.placeShip(new Submarine(), 8,'A', false);
+        board.placeShip(new Submarine("SUBMARINE"), 8,'A', false);
         for(Ship ships : board.getShips()) {
             if (ships.getOccupiedSquares().get(4).getRow() == 7 && ships.getOccupiedSquares().get(4).getColumn() == 'C')
                 System.out.println("Submarine Placement Good");
@@ -181,7 +181,7 @@ public class BoardTest {
     @Test
     public void testVerticalSubmarinePlacement(){
         Board board = new Board();
-        board.placeShip(new Submarine(), 1,'A', true);
+        board.placeShip(new Submarine("SUBMARINE"), 1,'A', true);
         for(Ship ships : board.getShips()) {
             if (ships.getOccupiedSquares().get(4).getRow() == 3 && ships.getOccupiedSquares().get(4).getColumn() == 'B')
                 System.out.println("Submarine Vertical Placement Good");
