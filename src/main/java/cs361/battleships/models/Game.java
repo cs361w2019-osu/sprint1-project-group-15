@@ -15,16 +15,16 @@ public class Game {
     public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
         boolean successful;
         String shipKind = ship.getKind();
-        if(shipKind.equals("SUBMARINE") || shipKind.equals("submarine")) {
-            successful = playersBoard.placeShip(new Submarine(shipKind), x, y, isVertical);
+        if(shipKind.toUpperCase().equals("SUBMARINE")) {
+            successful = playersBoard.placeShip(new Submarine(shipKind,ship.submerged), x, y, isVertical);
         }
         else
             successful = playersBoard.placeShip(new Ship(shipKind), x, y, isVertical);
         if (!successful) return false;
 
         Ship oppShip;
-        if(shipKind.equals("SUBMARINE") || shipKind.equals("submarine"))
-            oppShip = new Submarine(shipKind);
+        if(shipKind.toUpperCase().equals("SUBMARINE"))
+            oppShip = new Submarine(shipKind,ship.submerged);
         else
             oppShip = new Ship(shipKind);
         while (! (opponentsBoard.placeShip(oppShip, Board.randRow(), Board.randCol(), Board.randVertical())));

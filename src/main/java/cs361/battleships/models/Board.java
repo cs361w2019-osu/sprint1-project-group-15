@@ -24,12 +24,9 @@ public class Board {
 	 */
 	public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
 		int shipSize = ship.getSize();
-		if(this.getShips().size()>0) {
-			if (!validShipType(ship)) return false;
-		}
-		boolean submerged = false;
-		if(ship instanceof Submarine) submerged = ((Submarine) ship).submerged;
-		if (validLocation(shipSize, x, y, isVertical, submerged)) {
+		if(this.getShips().size()>0 && !validShipType(ship)) return false;
+
+		if (validLocation(shipSize, x, y, isVertical, ship.submerged)) {
 			ship.populateSquares(x,y,isVertical);
 			this.ships.add(ship);
 			remainingShips++;
