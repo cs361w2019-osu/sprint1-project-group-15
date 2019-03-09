@@ -187,5 +187,24 @@ public class BoardTest {
                 System.out.println("Submarine Vertical Placement Good");
         }
     }
+
+    @Test
+    public void testAllowedDuplicateAttack(){
+        Game game = new Game();
+        //with 2 ships, duplicate attacks should be allowed, as the space laser is active
+        assertTrue(game.placeShip(new Ship("MINDSWEEPER"), 2, 'D', true));
+        assertTrue(game.placeShip(new Ship("DESTROYER"), 4, 'B', false));
+        assertTrue(game.attack(5,'D'));
+        assertTrue(game.attack(5,'D'));
+    }
+
+    @Test
+    //Place a submerged submarine directly under another ship
+    public void testSubmergedSubmarinePlacement(){
+        Board board = new Board();
+        board.placeShip(new Ship("BATTLESHIP"), 5, 'B', false);
+        assertTrue(board.placeShip(new Submarine("SUBMARINE", true),5,'B', false));
+
+    }
 }
 
