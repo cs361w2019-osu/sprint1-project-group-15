@@ -27,7 +27,9 @@ public class Board {
 		if(this.getShips().size()>0) {
 			if (!validShipType(ship)) return false;
 		}
-		if (validLocation(shipSize, x, y, isVertical) || ship.getKind() == "SUBMARINE") {
+		boolean submerged = false;
+		if(ship instanceof Submarine) submerged = ((Submarine) ship).submerged;
+		if (validLocation(shipSize, x, y, isVertical, submerged)) {
 			ship.populateSquares(x,y,isVertical);
 			this.ships.add(ship);
 			remainingShips++;
@@ -165,27 +167,40 @@ public class Board {
 	/*
 	This function takes proposed ship coords and returns true or false based on whether the proposed location is valid
 	 */
-	private boolean validLocation(int size, int x, char y, boolean vertical) {
+	private boolean validLocation(int size, int x, char y, boolean vertical, boolean submerged) {
 		List<Square> allProposedSquares = new ArrayList<>();
+		//if size = 5, it's a sub, so we need to modify the size and set a flag, we'll use an integer flag to modify conditionals on the fly
+		int isSub = 0;
+		if(size == 5) {
+			isSub = 1;
+			size = 4;
+		}
 		//check max x and y and populate proposed squares depending on orientation
 		if (vertical) {
-			if (x + size - 1 > 10 || (int)y > 74) {
+			if (x + size - 1 > 10 || (int) y > (74 - isSub)) {
 				return false;
 			}
 			for (int i = 0; i < size; i++) {
 				allProposedSquares.add(new Square(x + i, y));
 			}
+			//if this is a sub, we'll manually add the "nub", complete with ugly casting to integer and back to char
+			if(isSub==1) allProposedSquares.add(new Square(x+2,(char)((int)y+1)));
 		} else {
-			if ((int) y + size - 1 > 74 || x > 10) {
+			//expanding the bounds checking for when isSub=1
+			if ((int) y + size - 1 > 74 || x > 10 || (x-isSub) < 1) {
 				return false;
 			}
 			for (int i = 0; i < size; i++) {
 				allProposedSquares.add(new Square(x, (char) ((int) y + i)));
 			}
+			//if its a sub, add the nub
+			if(isSub==1) allProposedSquares.add(new Square(x-1, (char)((int)y+2)));
 		}
+
 		//if max range is outside grid, return false;
 		//now checking if new ship would overlap with existing ships
-		if(this.getShips().size()>0) {
+		//if it's submerged we'll skip this part, we know our sub is always placed last, so we use this to cut down the work we do here
+		if(this.getShips().size()>0 && !submerged) {
 			for(Ship ships : this.getShips()){
 				for(Square sq : ships.getOccupiedSquares()) {
 					for (int i=0; i<allProposedSquares.size(); i++) {

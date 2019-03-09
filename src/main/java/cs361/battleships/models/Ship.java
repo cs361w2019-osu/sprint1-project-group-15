@@ -13,6 +13,7 @@ public class Ship {
 	@JsonProperty protected Square captainsQuarters;
 	@JsonProperty protected int health; // HP of captain's quarter
 	@JsonProperty protected boolean sunk;
+	@JsonProperty protected boolean submerged;
 
 	public Ship() {
 		this.occupiedSquares = new ArrayList<>();
@@ -21,6 +22,7 @@ public class Ship {
 		this.captainsQuarters = new Square();
 		this.health=1;
 		this.sunk=false;
+		this.submerged=false;
 	}
 
 	public Ship(String kind) {

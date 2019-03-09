@@ -10,7 +10,9 @@ public class Submarine extends Ship {
 	public Submarine(String kind) {
 		this.health = 2;
 		this.size = 5;
-		this.kind = kind;
+		if(this.kind == "SUBMARINE") submerged = true;
+		else submerged = false;
+		this.kind = kind.toUpperCase();
 	}
 
 	public void populateSquares(int x, char y, boolean vert) {

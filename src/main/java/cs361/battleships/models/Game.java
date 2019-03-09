@@ -23,7 +23,7 @@ public class Game {
         if (!successful) return false;
 
         Ship oppShip;
-        if(shipKind.equals("SUBMARINE"))
+        if(shipKind.equals("SUBMARINE") || shipKind.equals("submarine"))
             oppShip = new Submarine(shipKind);
         else
             oppShip = new Ship(shipKind);
