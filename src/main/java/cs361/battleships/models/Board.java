@@ -53,39 +53,73 @@ public class Board {
 		for(var ship : this.getShips())
 		{
 			System.out.println(ship.getKind());
-			if(direction.contentEquals("north"))
+			var proposedMove = ship.getMove(direction);
+			if(validMove(proposedMove, ship, this.getShips()))
 			{
-				if(this.validLocation(ship.getSize(), ship.getOccupiedSquares().get(0).getRow() - 1, ship.getOccupiedSquares().get(0).getColumn(), ship.isVertical()))
-				{
-					ship.move(direction);
-				}
-				else
-				{
-					System.out.println("DIDN'T WORK");
-				}
+				ship.move(direction);
 			}
-			else if(direction.contentEquals("south"))
+			else
 			{
-				if(this.validLocation(ship.getSize(), ship.getOccupiedSquares().get(0).getRow() + 1, ship.getOccupiedSquares().get(0).getColumn(), ship.isVertical()))
-				{
-					ship.move(direction);
-				}
+				System.out.println("FALSE");
 			}
-			else if(direction.contentEquals("west"))
+		}
+	}
+
+
+//
+//	if (x + size - 1 > 10 || (int)y > 74) {
+//		return false;
+//	}
+//			for (int i = 0; i < size; i++) {
+//		allProposedSquares.add(new Square(x + i, y));
+//	}
+//} else {
+//		if ((int) y + size - 1 > 74 || x > 10) {
+//		return false;
+//		}
+//		for (int i = 0; i < size; i++) {
+//		allProposedSquares.add(new Square(x, (char) ((int) y + i)));
+//		}
+//		}
+
+	private boolean validMove(List<Square> proposedMove, Ship proposedShip, List<Ship> ships)
+	{
+		for(var square : proposedMove)
+		{
+			if(square.getColumn() > 'J' || square.getColumn() < 'A')
 			{
-				if(this.validLocation(ship.getSize(), ship.getOccupiedSquares().get(0).getRow(), (char)(ship.getOccupiedSquares().get(0).getColumn() - 1), ship.isVertical()))
-				{
-					ship.move(direction);
-				}
+				System.out.println("FAILING COLUMN CHECK");
+				return false;
 			}
-			else if(direction.contentEquals("east"))
+			if(square.getRow() > 10 || square.getRow() < 1)
 			{
-				if(this.validLocation(ship.getSize(), ship.getOccupiedSquares().get(0).getRow(), (char)(ship.getOccupiedSquares().get(0).getColumn() + 1), ship.isVertical()))
+				System.out.println("FAILING ROW CHECK");
+				return false;
+			}
+		}
+
+		for(var propSq : proposedMove)
+		{
+			//loop through every ship
+			for(var ship : ships)
+			{
+				//loop through every square in the ship
+				for(var sq : ship.getOccupiedSquares())
 				{
-					ship.move(direction);
+					//compare each square to the proposed square.
+					if(propSq.getRow() == sq.getRow() && propSq.getColumn() == sq.getColumn())
+					{
+						if(!proposedShip.equals(ship))
+						{
+							return false;
+						}
+					}
 				}
 			}
 		}
+
+
+		return true;
 	}
 
 	public Ship getDirectionmostShip(String direction)

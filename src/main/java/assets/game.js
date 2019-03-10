@@ -155,7 +155,7 @@ function canMoveCheck()
     {
         document.getElementById("movement_buttons").classList.remove("hidden");
         playerCanMove = true;
-        shipMovesRemaining = 2;
+        shipMovesRemaining = 200;
     }
     else if(!gameIsOver && playerCanMove && shipMovesRemaining === 0)
     {
