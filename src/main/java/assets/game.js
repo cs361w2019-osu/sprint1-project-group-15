@@ -9,6 +9,7 @@ var sonarPulse = 2;
 var sonarAvailable = false;
 var actionIsSonar = false;
 var isSubmerged = false;
+var spaceLaserEngaged = false;
 
 function makeGrid(table, isPlayer, gridSize) {
     for (i=0; i<10; i++) {
@@ -79,6 +80,17 @@ function markHits(board, elementId, surrenderText) {
 }
 
 function redrawGrid() {
+
+    if(spaceLaserEngaged == false && game.opponentsBoard.remainingShips < 3 && !isSetup) {
+        spaceLaserEngaged = true;
+        var laserSpan = document.createElement("span");
+        laserSpan.style.color = "red";
+        laserSpan.style.fontSize = "20px";
+        laserSpan.appendChild(document.createTextNode(" - SPACE LASER ENGAGED"));
+        document.querySelector("h1").appendChild(laserSpan);
+        alert("Warning: Space Laser has been engaged.\n\n You may now attack ANY square.");
+    }
+
     Array.from(document.getElementById("opponent").childNodes).forEach((row) => row.remove());
     Array.from(document.getElementById("player").childNodes).forEach((row) => row.remove());
 

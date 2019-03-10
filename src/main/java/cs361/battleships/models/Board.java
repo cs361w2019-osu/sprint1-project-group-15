@@ -10,6 +10,7 @@ public class Board {
 	@JsonProperty private List<Ship> ships;
 	@JsonProperty private List<Result> attacks;
 	@JsonProperty private int remainingShips;
+	@JsonProperty private boolean laserEnabled;
 	/*
 	DO NOT change the signature of this method. It is used by the grading scripts.
 	 */
@@ -17,6 +18,7 @@ public class Board {
 		this.ships = new ArrayList<>();
 		this.attacks = new ArrayList<>();
 		this.remainingShips = 0;
+		this.laserEnabled = false;
 	}
 
 	/*
@@ -24,10 +26,9 @@ public class Board {
 	 */
 	public boolean placeShip(Ship ship, int x, char y, boolean isVertical) {
 		int shipSize = ship.getSize();
-		if(this.getShips().size()>0) {
-			if (!validShipType(ship)) return false;
-		}
-		if (validLocation(shipSize, x, y, isVertical) || ship.getKind() == "SUBMARINE") {
+		if(this.getShips().size()>0 && !validShipType(ship)) return false;
+
+		if (validLocation(shipSize, x, y, isVertical, ship.submerged)) {
 			ship.populateSquares(x,y,isVertical);
 			this.ships.add(ship);
 			remainingShips++;
@@ -48,27 +49,52 @@ public class Board {
 		//Initialize result with status TBD
 		Result res = new Result();
 		res.setLocation(sq1);
-		//If ship is present on coordinates
 
-		if(isDuplicateAttack(sq1) && !isCaptainsQuarter(x,y) || (isCaptainsQuarter(x,y) && !(this.getShip(x,y) == null) && this.getShip(x,y).isSunk()) ) {
+		//If ship is present on coordinates
+		//repeat attacks only during laser phase or on unsunk captain's quarters during bomb phase
+		if(!laserEnabled && isDuplicateAttack(sq1) && shipPresent(x,y)) {
+			for (Ship ships : getShip(x, y)) {
+				if (!isCaptainsQuarter(x, y, ships) || isCaptainsQuarter(x, y, ships) && ships.isSunk()) {
+					res.setResult(AttackStatus.INVALID);
+					return res;
+				}
+			}
+		} else if (isDuplicateAttack(sq1) && !laserEnabled) {
 			res.setResult(AttackStatus.INVALID);
 			return res;
 		}
+
+		//right now, this only produces one res per attack, even if there are two ships there.
 		this.attacks.add(res);
+
+		//
 		if(shipPresent(x,y)){
-			res.setShip(getShip(x,y));
-
-			if (!isCaptainsQuarter(x,y) ) {
-				res.setResult(AttackStatus.HIT);
-			} else if (isCaptainsQuarter(x,y) && res.getShip().isSunk()) {
-				res.setResult(AttackStatus.SUNK);
-				remainingShips--;
-				if (!this.shipsLeft()) {
-					res.setResult(AttackStatus.SURRENDER);
+			//we'll get all the ships at this location
+			for(Ship ships : getShip(x,y)) {
+				//if there is no laser and the current ship is submerged, we'll give a miss
+				if(!laserEnabled && ships.submerged) {
+					res.setShip(ships);
+					res.setResult(AttackStatus.MISS);
+				} //otherwise we use the same logic as before
+				else {
+					res.setShip(ships); //tag the ship to the result
+					if (!isCaptainsQuarter(x, y, ships)) { //if it's not a captains quarters, give a standard hit
+						res.setResult(AttackStatus.HIT);
+					} else { //otherwise it's a capt quarters, deduct health, but set to miss for now
+						ships.deductHealth();
+						res.setResult(AttackStatus.MISS);
+						if (ships.isSunk()) { //if we sunk the ship with last hit, set result to sunk and decrement the count
+							res.setResult(AttackStatus.SUNK);
+							remainingShips--;
+							//if there's no more ships, actually set the result to surrender
+							if (!this.shipsLeft()) {
+								res.setResult(AttackStatus.SURRENDER);
+							}
+						}
+					}
 				}
-			} else res.setResult(AttackStatus.MISS);
+			}
 		}
-
 		//If input is out of bounds or incorrect. Needs to include duplicate attack as well.
 		else if((x>10 || x<0) || (y > 'J' || y < 'A')){
 			res.setResult(AttackStatus.INVALID);
@@ -77,7 +103,10 @@ public class Board {
 		else {
 			res.setResult(AttackStatus.MISS);
 		}
-		return res;
+		//Setting laser for the next attack cycle
+		if(remainingShips < 3) laserEnabled = true;
+
+		return res; //will return the last thing we set res to
 	}
 
 	public boolean isDuplicateAttack(Square attackLocation) {
@@ -102,15 +131,17 @@ public class Board {
 	}
 
 	//Returns the ship on a given coordinate
-	private Ship getShip(int x, char y){
+	private List<Ship> getShip(int x, char y){
+		List<Ship> matchedShips = new ArrayList<>();
 		Square sq = new Square(x, y);
 		for(Ship ships : this.getShips()){
 			for(Square squares : ships.getOccupiedSquares()){
 				if(isSquareConflict(sq, squares))
-					return ships;
+					matchedShips.add(ships);
 			}
 		}
-		return null;
+		if(matchedShips.size() < 1) return null;
+		else return matchedShips;
 	}
 
 	public void setShips(List<Ship> ships) {
@@ -133,15 +164,16 @@ public class Board {
 	}
 
 	// Helper function to check if a coordinate is a captain's quarter
-	public boolean isCaptainsQuarter(int x, char y) {
-		Square sq = new Square(x, y);
+	public boolean isCaptainsQuarter(int x, char y, Ship myShip) {
+		/*Square sq = new Square(x, y);
 		for(Ship ships : this.getShips()) {
 			if (isSquareConflict(sq, ships.getCaptainsQuarters())) {
 				return true;
 			}
-		}
-
-		return false;
+		}*/
+		//replacing this functionality with direct access by passing the ship
+		if(myShip.getCaptainsQuarters().getRow()==x && myShip.getCaptainsQuarters().getColumn()==y) return true;
+		else return false;
 	}
 
 	/*
@@ -152,9 +184,9 @@ public class Board {
 		for(Ship ships : this.getShips()){
 			for(Square squares : ships.getOccupiedSquares()) {
 				if (isSquareConflict(sq, squares)) {
-					if (isSquareConflict(sq, ships.getCaptainsQuarters())) {
-						ships.deductHealth();
-					}
+					//if (isSquareConflict(sq, ships.getCaptainsQuarters())) {
+					//	ships.deductHealth();
+					//}
 					return true;
 				}
 			}
@@ -165,27 +197,40 @@ public class Board {
 	/*
 	This function takes proposed ship coords and returns true or false based on whether the proposed location is valid
 	 */
-	private boolean validLocation(int size, int x, char y, boolean vertical) {
+	private boolean validLocation(int size, int x, char y, boolean vertical, boolean submerged) {
 		List<Square> allProposedSquares = new ArrayList<>();
+		//if size = 5, it's a sub, so we need to modify the size and set a flag, we'll use an integer flag to modify conditionals on the fly
+		int isSub = 0;
+		if(size == 5) {
+			isSub = 1;
+			size = 4;
+		}
 		//check max x and y and populate proposed squares depending on orientation
 		if (vertical) {
-			if (x + size - 1 > 10 || (int)y > 74) {
+			if (x + size - 1 > 10 || (int) y > (74 - isSub)) {
 				return false;
 			}
 			for (int i = 0; i < size; i++) {
 				allProposedSquares.add(new Square(x + i, y));
 			}
+			//if this is a sub, we'll manually add the "nub", complete with ugly casting to integer and back to char
+			if(isSub==1) allProposedSquares.add(new Square(x+2,(char)((int)y+1)));
 		} else {
-			if ((int) y + size - 1 > 74 || x > 10) {
+			//expanding the bounds checking for when isSub=1
+			if ((int) y + size - 1 > 74 || x > 10 || (x-isSub) < 1) {
 				return false;
 			}
 			for (int i = 0; i < size; i++) {
 				allProposedSquares.add(new Square(x, (char) ((int) y + i)));
 			}
+			//if its a sub, add the nub
+			if(isSub==1) allProposedSquares.add(new Square(x-1, (char)((int)y+2)));
 		}
+
 		//if max range is outside grid, return false;
 		//now checking if new ship would overlap with existing ships
-		if(this.getShips().size()>0) {
+		//if it's submerged we'll skip this part, we know our sub is always placed last, so we use this to cut down the work we do here
+		if(this.getShips().size()>0 && !submerged) {
 			for(Ship ships : this.getShips()){
 				for(Square sq : ships.getOccupiedSquares()) {
 					for (int i=0; i<allProposedSquares.size(); i++) {
