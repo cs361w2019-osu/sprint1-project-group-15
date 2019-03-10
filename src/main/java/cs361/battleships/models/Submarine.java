@@ -1,6 +1,7 @@
 package cs361.battleships.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,17 @@ public class Submarine extends Ship {
 		if(kind.equals("SUBMARINE")) this.submerged = true;
 		else this.submerged = false;
 		this.kind = kind.toUpperCase();
+	}
+
+	public Submarine(Ship ship)
+	{
+		this.health = ship.health;
+		this.size = ship.size;
+		this.submerged = ship.submerged;
+		this.kind = ship.kind;
+		this.occupiedSquares = ship.occupiedSquares;
+		this.sunk = ship.sunk;
+		this.captainsQuarters = ship.captainsQuarters;
 	}
 
 	public Submarine(String kind, boolean submerged){

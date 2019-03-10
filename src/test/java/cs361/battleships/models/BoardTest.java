@@ -206,5 +206,70 @@ public class BoardTest {
         assertTrue(board.placeShip(new Submarine("SUBMARINE", true),5,'B', false));
 
     }
+
+    @Test
+    public void testValidMove()
+    {
+        Board testBoard = new Board();
+        Ship test = new Ship("MINESWEEPER");
+
+        //this is a valid placement
+        assertTrue(testBoard.placeShip(test, 2, 'B', true));
+        var proposedMove = test.getMove("west");
+        assertTrue(testBoard.validMove(test.getMove("west"), test, testBoard.getShips()));
+        assertTrue(testBoard.validMove(test.getMove("north"), test, testBoard.getShips()));
+        assertTrue(testBoard.validMove(test.getMove("south"), test, testBoard.getShips()));
+        assertTrue(testBoard.validMove(test.getMove("east"), test, testBoard.getShips()));
+
+        test.move("north");
+        assertFalse(testBoard.validMove(test.getMove("north"), test, testBoard.getShips()));
+        test.move("west");
+        assertFalse(testBoard.validMove(test.getMove("west"), test, testBoard.getShips()));
+    }
+
+    @Test
+    public void testGetDirectionmostShip()
+    {
+        Board testBoard = new Board();
+        Ship test = new Ship("MINESWEEPER");
+        Ship test2 = new Ship("BATTLESHIP");
+
+        assertTrue(testBoard.placeShip(test, 3, 'C', true));
+        assertTrue(testBoard.placeShip(test2, 9, 'C', false));
+
+        //northernmostShip is expected to be "MINESWEEPER"
+        //southernmostShip is expected to be "BATTLESHIP"
+        //easternmostShip is expected to be "BATTLESHIP"
+        assertTrue(testBoard.getDirectionmostShip("north").getKind().equals("MINESWEEPER"));
+        assertTrue(testBoard.getDirectionmostShip("south").getKind().equals("BATTLESHIP"));
+        assertTrue(testBoard.getDirectionmostShip("east").getKind().equals("BATTLESHIP"));
+    }
+
+    @Test
+    public void testMoveShips()
+    {
+        Board testBoard = new Board();
+        Ship test = new Ship("MINESWEEPER");
+        assertTrue(testBoard.placeShip(test, 2, 'B', true));
+
+        Square sq1 = new Square();
+        sq1.setColumn(test.getOccupiedSquares().get(0).getColumn());
+        sq1.setRow(test.getOccupiedSquares().get(0).getRow());
+
+        Square sq2 = new Square();
+        sq2.setColumn(test.getOccupiedSquares().get(1).getColumn());
+        sq2.setRow(test.getOccupiedSquares().get(1).getRow());
+
+        test.move("east");
+
+        assertTrue(test.getOccupiedSquares().get(0).getColumn() != sq1.getColumn());
+        assertTrue(test.getOccupiedSquares().get(1).getColumn() != sq2.getColumn());
+
+        test.move("north");
+
+        assertTrue(test.getOccupiedSquares().get(0).getRow() != sq1.getRow());
+        assertTrue(test.getOccupiedSquares().get(1).getRow() != sq2.getRow());
+    }
+
 }
 

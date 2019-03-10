@@ -48,4 +48,11 @@ public class ApplicationController {
             return Results.badRequest();
         }
     }
+
+    public static Result moveShips(Context context, MovementGameAction action) {
+        System.out.println(action.getDirection());
+        action.replaceSubmarine();
+        action.getGame().getPlayersBoard().moveShips(action.getDirection());
+        return Results.json().render(action.getGame());
+    }
 }

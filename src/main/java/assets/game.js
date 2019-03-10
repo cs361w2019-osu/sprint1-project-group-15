@@ -10,6 +10,8 @@ var sonarAvailable = false;
 var actionIsSonar = false;
 var isSubmerged = false;
 var spaceLaserEngaged = false;
+var playerCanMove = false;
+var shipMovesRemaining = 0;
 
 function makeGrid(table, isPlayer, gridSize) {
     for (i=0; i<10; i++) {
@@ -22,6 +24,20 @@ function makeGrid(table, isPlayer, gridSize) {
             row.appendChild(column);
         }
         table.appendChild(row);
+    }
+}
+
+function canMoveCheck()
+{
+    if(!gameIsOver && shipsSunk > 0 && !playerCanMove)
+    {
+        document.getElementById("movement_buttons").classList.remove("hidden");
+        playerCanMove = true;
+        shipMovesRemaining = 2;
+    }
+    else if(!gameIsOver && playerCanMove && shipMovesRemaining === 0)
+    {
+        document.getElementById("movement_buttons").classList.add("hidden");
     }
 }
 
@@ -81,7 +97,7 @@ function markHits(board, elementId, surrenderText) {
 
 function redrawGrid() {
 
-    if(spaceLaserEngaged == false && game.opponentsBoard.remainingShips < 3 && !isSetup) {
+    if(spaceLaserEngaged == false && game.opponentsBoard.remainingShips < 4 && !isSetup) {
         spaceLaserEngaged = true;
         var laserSpan = document.createElement("span");
         laserSpan.style.color = "red";
@@ -203,6 +219,7 @@ function cellClick() {
 
         sonarPulseUpdate();
     }
+    canMoveCheck();
 }
 
 function drawSonar (row, col) {
@@ -315,6 +332,38 @@ function place(size) {
                 cell.classList.toggle("submerged")
             } else cell.classList.toggle("placed");
         }
+    }
+}
+
+function killTwoShips()
+{
+    sendXhr("POST", "/attack", {game: game, x: game.opponentsBoard.ships[0].captainsQuarters.row , y: game.opponentsBoard.ships[0].captainsQuarters.column}, function(data) {
+        game = data;
+        redrawGrid();
+    });
+    console.log("attacked one ship");
+    sendXhr("POST", "/attack",{game: game, x: game.opponentsBoard.ships[1].captainsQuarters.row , y: game.opponentsBoard.ships[1].captainsQuarters.column}, function(data) {
+            game = data;
+            redrawGrid();
+        });
+        console.log("attacked one ship");
+    sendXhr("POST", "/attack", {game: game, x: game.opponentsBoard.ships[1].captainsQuarters.row , y: game.opponentsBoard.ships[1].captainsQuarters.column}, function(data) {
+        game = data;
+        redrawGrid();
+    });
+    console.log("attacked one ship");
+}
+
+function move_ships(direction)
+{
+    if(!gameIsOver && playerCanMove && shipMovesRemaining > 0)
+    {
+        sendXhr("POST", "/move", {game: game, direction: direction}, function(data) {
+                game = data;
+                shipMovesRemaining--;
+                redrawGrid();
+                canMoveCheck();
+        });
     }
 }
 
@@ -475,6 +524,12 @@ function initGame() {
     //event handlers for the modal
     document.getElementById("modal-close").addEventListener("click", close_modal);
     document.getElementById("modal-ok-button").addEventListener("click", close_modal);
+
+    //event handlers for movement buttons
+    document.getElementById("move_north").addEventListener("click", function(){move_ships("north") ;});
+    document.getElementById("move_west").addEventListener("click",  function(){move_ships("west")  ;});
+    document.getElementById("move_south").addEventListener("click", function(){move_ships("south") ;});
+    document.getElementById("move_east").addEventListener("click",  function(){move_ships("east")  ;});
 
     // event handler for the surrender button
     document.getElementById("surrender").addEventListener("click", function() {
