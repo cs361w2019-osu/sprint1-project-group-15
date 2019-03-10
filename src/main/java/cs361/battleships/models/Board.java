@@ -65,7 +65,7 @@ public class Board {
 		}
 	}
 
-	private boolean validMove(List<Square> proposedMove, Ship proposedShip, List<Ship> ships)
+	public boolean validMove(List<Square> proposedMove, Ship proposedShip, List<Ship> ships)
 	{
 		for(var square : proposedMove)
 		{
@@ -230,7 +230,7 @@ public class Board {
 			res.setResult(AttackStatus.MISS);
 		}
 		//Setting laser for the next attack cycle
-		if(remainingShips < 3) laserEnabled = true;
+		if(remainingShips < 4) laserEnabled = true;
 
 		return res; //will return the last thing we set res to
 	}

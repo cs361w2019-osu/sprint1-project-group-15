@@ -33,7 +33,7 @@ function canMoveCheck()
     {
         document.getElementById("movement_buttons").classList.remove("hidden");
         playerCanMove = true;
-        shipMovesRemaining = 200;
+        shipMovesRemaining = 2;
     }
     else if(!gameIsOver && playerCanMove && shipMovesRemaining === 0)
     {
@@ -97,7 +97,7 @@ function markHits(board, elementId, surrenderText) {
 
 function redrawGrid() {
 
-    if(spaceLaserEngaged == false && game.opponentsBoard.remainingShips < 3 && !isSetup) {
+    if(spaceLaserEngaged == false && game.opponentsBoard.remainingShips < 4 && !isSetup) {
         spaceLaserEngaged = true;
         var laserSpan = document.createElement("span");
         laserSpan.style.color = "red";
