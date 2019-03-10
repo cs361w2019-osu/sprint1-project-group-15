@@ -100,6 +100,8 @@ public class Ship {
 			this.captainsQuarters = occupiedSquares.get(1);
 		} else if(kind.equals("BATTLESHIP")) {
 			this.captainsQuarters = occupiedSquares.get(2);
+		} else if(kind.toLowerCase().equals("submarine")) {
+			this.captainsQuarters = occupiedSquares.get(3);
 		}
 	}
 

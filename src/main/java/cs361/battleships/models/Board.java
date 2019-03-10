@@ -92,7 +92,7 @@ public class Board {
 					//compare each square to the proposed square.
 					if(propSq.getRow() == sq.getRow() && propSq.getColumn() == sq.getColumn())
 					{
-						if(!proposedShip.equals(ship))
+						if(!proposedShip.equals(ship) && !ship.submerged && !proposedShip.submerged)
 						{
 							return false;
 						}
