@@ -3,6 +3,7 @@ package cs361.battleships.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Board {
@@ -33,6 +34,115 @@ public class Board {
 			remainingShips++;
 			return true;
 		} else return false;
+	}
+
+
+	public void moveShips(String direction)
+	{
+		List<Ship> sortedShips = new ArrayList<>();
+		Ship curShip = getDirectionmostShip(direction);
+		var ships = this.getShips();
+		while(curShip != null)
+		{
+			sortedShips.add(curShip);
+			ships.remove(curShip);
+			curShip = getDirectionmostShip(direction);
+		}
+		this.ships = sortedShips;
+
+		for(var ship : this.getShips())
+		{
+			System.out.println(ship.getKind());
+			if(direction.contentEquals("north"))
+			{
+				if(this.validLocation(ship.getSize(), ship.getOccupiedSquares().get(0).getRow() - 1, ship.getOccupiedSquares().get(0).getColumn(), ship.isVertical()))
+				{
+					ship.move(direction);
+				}
+				else
+				{
+					System.out.println("DIDN'T WORK");
+				}
+			}
+			else if(direction.contentEquals("south"))
+			{
+				if(this.validLocation(ship.getSize(), ship.getOccupiedSquares().get(0).getRow() + 1, ship.getOccupiedSquares().get(0).getColumn(), ship.isVertical()))
+				{
+					ship.move(direction);
+				}
+			}
+			else if(direction.contentEquals("west"))
+			{
+				if(this.validLocation(ship.getSize(), ship.getOccupiedSquares().get(0).getRow(), (char)(ship.getOccupiedSquares().get(0).getColumn() - 1), ship.isVertical()))
+				{
+					ship.move(direction);
+				}
+			}
+			else if(direction.contentEquals("east"))
+			{
+				if(this.validLocation(ship.getSize(), ship.getOccupiedSquares().get(0).getRow(), (char)(ship.getOccupiedSquares().get(0).getColumn() + 1), ship.isVertical()))
+				{
+					ship.move(direction);
+				}
+			}
+		}
+	}
+
+	public Ship getDirectionmostShip(String direction)
+	{
+		if(this.getShips().size() == 0)
+		{
+			return null;
+		}
+
+	    List<Ship> ships = this.getShips();
+	    Ship directionMostShip = ships.get(0);
+	    Square directionMostSquare = directionMostShip.getOccupiedSquares().get(0);
+		for(var ship : ships)
+		{
+			for(var square : ship.getOccupiedSquares())
+			{
+				if(direction.contentEquals("north"))
+				{
+					System.out.println("NORTH");
+					if(square.getRow() < directionMostSquare.getRow())
+					{
+						directionMostShip = ship;
+						directionMostSquare = square;
+					}
+				}
+				else if(direction.contentEquals("south"))
+				{
+					System.out.println("SOUTH");
+					if(square.getRow() > directionMostSquare.getRow())
+					{
+						directionMostShip = ship;
+						directionMostSquare = square;
+					}
+				}
+				else if(direction.contentEquals("west"))
+				{
+					System.out.println("WEST");
+					if(square.getColumn() < directionMostSquare.getColumn())
+					{
+						directionMostShip = ship;
+						directionMostSquare = square;
+					}
+				}
+				else if(direction.contentEquals("east"))
+				{
+					System.out.println("EAST");
+					if(square.getColumn() > directionMostSquare.getColumn())
+					{
+						directionMostShip = ship;
+						directionMostSquare = square;
+					}
+				}
+
+			}
+		}
+
+	    return directionMostShip;
 	}
 
 	/*

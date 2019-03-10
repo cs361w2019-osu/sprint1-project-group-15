@@ -63,6 +63,40 @@ public class Ship {
 		createCaptainsQuarters();
 	}
 
+	boolean isVertical()
+	{
+		return (this.getOccupiedSquares().get(0).getColumn() - this.getOccupiedSquares().get(1).getColumn() == 0);
+	}
+
+	public List<Square> getMove(String direction)
+	{
+		System.out.println("moving " + this.getKind() + " Is vertical: " + this.isVertical());
+		List<Square> newSquares = new ArrayList<>();
+		for(var coord : this.getOccupiedSquares())
+		{
+			switch(direction)
+			{
+				case "north":
+					newSquares.add(new Square(coord.getRow() - 1, coord.getColumn()));
+					break;
+				case "south":
+					newSquares.add(new Square(coord.getRow() + 1, coord.getColumn()));
+					break;
+				case "east":
+					newSquares.add(new Square(coord.getRow(),  (char)((int) coord.getColumn() + 1)));
+					break;
+				case "west":
+					newSquares.add(new Square(coord.getRow(), (char)((int) coord.getColumn() - 1)));
+					break;
+			}
+		}
+		return newSquares;
+	}
+
+	//either moves the ship, or if it's an invalid move doesn't
+	//because we're finding the farthest ship in the direction the player wants to move
+	//this should work without having to take into account the location of the other ships.
+
 	public Square getCaptainsQuarters() { return this.captainsQuarters; }
 
 	public void createCaptainsQuarters(){
@@ -88,5 +122,31 @@ public class Ship {
 		if (this.health == 0) { this.sunk=true; }
 		else { this.sunk=false; }
 		return this.sunk;
+	}
+
+	public void move(String direction)
+	{
+		System.out.println(String.format("MOVING %s %s", this.getKind(), direction));
+		for(var square : this.getOccupiedSquares())
+		{
+			switch(direction)
+			{
+				case "north":
+					square.setRow(square.getRow() - 1);
+					break;
+				case "south":
+					square.setRow(square.getRow() + 1);
+					break;
+				case "east":
+					square.setColumn((char)((int)square.getColumn() + 1));
+					break;
+				case "west":
+					square.setColumn((char)((int)square.getColumn() - 1));
+					break;
+				default:
+					break;
+			}
+		}
+		this.createCaptainsQuarters();
 	}
 }

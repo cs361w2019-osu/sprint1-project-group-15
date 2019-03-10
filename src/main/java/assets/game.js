@@ -151,7 +151,7 @@ function registerOppCellListener(f) {
 
 function canMoveCheck()
 {
-    if(!gameIsOver && shipsSunk >= 2)
+    if(!gameIsOver && shipsSunk > 0 && !playerCanMove)
     {
         document.getElementById("movement_buttons").classList.remove("hidden");
         playerCanMove = true;
@@ -159,15 +159,13 @@ function canMoveCheck()
     }
     else if(!gameIsOver && playerCanMove && shipMovesRemaining === 0)
     {
-        document.getElementbyId("movement_buttons").classList.add("hidden");
+        document.getElementById("movement_buttons").classList.add("hidden");
     }
 }
 
 function cellClick() {
     let row = this.parentNode.rowIndex + 1;
     let col = String.fromCharCode(this.cellIndex + 65);
-
-    canMoveCheck();
 
     if (isSetup && !gameIsOver) {
         sendXhr("POST", "/place", {game: game, shipType: shipType, x: row, y: col, isVertical: vertical}, function(data) {
@@ -200,7 +198,7 @@ function cellClick() {
         document.getElementById("player_prompt").textContent="Select Your Next Attack";
         sonarPulseUpdate();
     }
-
+    canMoveCheck();
 }
 
 function drawSonar (row, col) {
@@ -292,6 +290,25 @@ function place(size) {
             cell.classList.toggle("placed");
         }
     }
+}
+
+function killTwoShips()
+{
+    sendXhr("POST", "/attack", {game: game, x: game.opponentsBoard.ships[0].captainsQuarters.row , y: game.opponentsBoard.ships[0].captainsQuarters.column}, function(data) {
+        game = data;
+        redrawGrid();
+    });
+    console.log("attacked one ship");
+    sendXhr("POST", "/attack",{game: game, x: game.opponentsBoard.ships[1].captainsQuarters.row , y: game.opponentsBoard.ships[1].captainsQuarters.column}, function(data) {
+            game = data;
+            redrawGrid();
+        });
+        console.log("attacked one ship");
+    sendXhr("POST", "/attack", {game: game, x: game.opponentsBoard.ships[1].captainsQuarters.row , y: game.opponentsBoard.ships[1].captainsQuarters.column}, function(data) {
+        game = data;
+        redrawGrid();
+    });
+    console.log("attacked one ship");
 }
 
 function sonar() {
@@ -393,6 +410,8 @@ function move_ships(direction)
         sendXhr("POST", "/move", {game: game, direction: direction}, function(data) {
                 game = data;
                 shipMovesRemaining--;
+                redrawGrid();
+                canMoveCheck();
         });
     }
 }

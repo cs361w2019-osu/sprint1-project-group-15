@@ -141,6 +141,23 @@ public class BoardTest {
         }
     }
 
+    @Test
+    public void testFindDirectionmostShip()
+    {
+        //Ship getDirectionmostShip(String direction)
+        Board board = new Board();
+
+        Ship s1 = new Ship("BATTLESHIP");
+        Ship s2 = new Ship("MINESWEEPER");
+        Ship s3 = new Ship("DESTROYER");
+
+        board.placeShip(s1, 4, 'D', true);
+        board.placeShip(s2, 1, 'B', true);
+        board.placeShip(s3,3,'F',false);
+        Ship northernmost = board.getDirectionmostShip("north");
+        assertTrue(northernmost.equals(2));
+    }
+
     // Test attacks on the captain's quarters
     @Test
     public void testAttackingCaptainsQuarters(){
