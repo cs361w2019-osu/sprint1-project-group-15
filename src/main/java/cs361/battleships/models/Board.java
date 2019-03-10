@@ -3,6 +3,7 @@ package cs361.battleships.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Board {
@@ -34,6 +35,131 @@ public class Board {
 			remainingShips++;
 			return true;
 		} else return false;
+	}
+
+	public void moveShips(String direction)
+	{
+		List<Ship> sortedShips = new ArrayList<>();
+		Ship curShip = getDirectionmostShip(direction);
+		var ships = this.getShips();
+		while(curShip != null)
+		{
+			sortedShips.add(curShip);
+			ships.remove(curShip);
+			curShip = getDirectionmostShip(direction);
+		}
+		this.ships = sortedShips;
+
+		for(var ship : this.getShips())
+		{
+			System.out.println(ship.getKind());
+			var proposedMove = ship.getMove(direction);
+			if(validMove(proposedMove, ship, this.getShips()))
+			{
+				ship.move(direction);
+			}
+			else
+			{
+				System.out.println("FALSE");
+			}
+		}
+	}
+
+	private boolean validMove(List<Square> proposedMove, Ship proposedShip, List<Ship> ships)
+	{
+		for(var square : proposedMove)
+		{
+			if(square.getColumn() > 'J' || square.getColumn() < 'A')
+			{
+				System.out.println("FAILING COLUMN CHECK");
+				return false;
+			}
+			if(square.getRow() > 10 || square.getRow() < 1)
+			{
+				System.out.println("FAILING ROW CHECK");
+				return false;
+			}
+		}
+
+		for(var propSq : proposedMove)
+		{
+			//loop through every ship
+			for(var ship : ships)
+			{
+				//loop through every square in the ship
+				for(var sq : ship.getOccupiedSquares())
+				{
+					//compare each square to the proposed square.
+					if(propSq.getRow() == sq.getRow() && propSq.getColumn() == sq.getColumn())
+					{
+						if(!proposedShip.equals(ship))
+						{
+							return false;
+						}
+					}
+				}
+			}
+		}
+
+
+		return true;
+	}
+
+	public Ship getDirectionmostShip(String direction)
+	{
+		if(this.getShips().size() == 0)
+		{
+			return null;
+		}
+
+		List<Ship> ships = this.getShips();
+		Ship directionMostShip = ships.get(0);
+		Square directionMostSquare = directionMostShip.getOccupiedSquares().get(0);
+		for(var ship : ships)
+		{
+			for(var square : ship.getOccupiedSquares())
+			{
+				if(direction.contentEquals("north"))
+				{
+					System.out.println("NORTH");
+					if(square.getRow() < directionMostSquare.getRow())
+					{
+						directionMostShip = ship;
+						directionMostSquare = square;
+					}
+				}
+				else if(direction.contentEquals("south"))
+				{
+					System.out.println("SOUTH");
+					if(square.getRow() > directionMostSquare.getRow())
+					{
+						directionMostShip = ship;
+						directionMostSquare = square;
+					}
+				}
+				else if(direction.contentEquals("west"))
+				{
+					System.out.println("WEST");
+					if(square.getColumn() < directionMostSquare.getColumn())
+					{
+						directionMostShip = ship;
+						directionMostSquare = square;
+					}
+				}
+				else if(direction.contentEquals("east"))
+				{
+					System.out.println("EAST");
+					if(square.getColumn() > directionMostSquare.getColumn())
+					{
+						directionMostShip = ship;
+						directionMostSquare = square;
+					}
+				}
+
+			}
+		}
+
+		return directionMostShip;
 	}
 
 	/*

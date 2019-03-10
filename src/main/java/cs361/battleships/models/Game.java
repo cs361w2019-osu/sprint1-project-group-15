@@ -42,4 +42,9 @@ public class Game {
         playersBoard.attack(Board.randRow(), Board.randCol());
         return true;
     }
+
+    public Board getPlayersBoard()
+    {
+        return playersBoard;
+    }
 }
